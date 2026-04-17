@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Básico -->
+    <title>Miradas tras un Objetivo | Óscar López Fotografía</title>
+    <meta name="description" content="Portfolio oficial de Óscar López. Ediciones fotográficas limitadas y Fine Art. Una mirada única a la Semana Santa de Sevilla, retratos y lugares de culto.">
+    <meta name="author" content="Óscar López">
+    
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+    <meta property="og:title" content="Miradas tras un Objetivo | Óscar López Fotografía">
+    <meta property="og:description" content="Ediciones fotográficas exclusivas limitadas a 15 copias. Adéntrate en la exposición virtual de Óscar López.">
+    <!-- URL y Miniatura activadas -->
+    <meta property="og:image" content="https://oscarlopezfotografias.com/fotos/Cachorro%2030x40.jpg">
+    <meta property="og:url" content="https://oscarlopezfotografias.com/">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Miradas tras un Objetivo | Óscar López">
+    <meta name="twitter:description" content="Ediciones fotográficas exclusivas limitadas a 15 copias. Adéntrate en la exposición virtual de Óscar López.">
+    <!-- URL y Miniatura activadas -->
+    <meta name="twitter:image" content="https://oscarlopezfotografias.com/fotos/Cachorro%2030x40.jpg">
+    
+    <link rel="icon" type="image/png" href="https://oscarlopezfotografias.com/favicon.png" sizes="512x512">
+    <link rel="apple-touch-icon" href="https://oscarlopezfotografias.com/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&family=Cinzel:wght@400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=17">
+</head>
+<body oncontextmenu="return false;">
+    <!-- Preloader Cinematográfico -->
+    <div id="preloader">
+    </div>
+
+    <!-- Cursor Personalizado -->
+    <div id="custom-cursor" class="custom-cursor"></div>
+
+    <!-- Widget Visualizador de Audio -->
+    <div id="audio-widget" class="audio-widget" title="Silenciar/Activar Audio">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+    <!-- Intro Overlay -->
+    <div id="intro-overlay" class="intro-overlay">
+        <!-- BOTÓN DE ENTRADA (Activa Musica y Animaciones) -->
+        <button id="start-intro" class="start-intro-btn">Adentrarse en la Exposición</button>
+
+        <audio id="bg-audio" style="display: none;"></audio>
+
+        <!-- Fondo animado con DOS imágenes en transición cruzada -->
+        <div id="intro-bg-container" class="intro-bg-container anim-paused">
+            <canvas id="intro-canvas-1" class="intro-canvas intro-photo-1"></canvas>
+            <canvas id="intro-canvas-2" class="intro-canvas intro-photo-2"></canvas>
+        </div>
+        
+        <!-- Texto central elegante -->
+        <div class="intro-title-wrapper anim-paused">
+            <h1 class="signature-font intro-signature">Óscar López García</h1>
+            <p class="intro-sub">Miradas tras un Objetivo</p>
+        </div>
+
+        <button id="skip-intro" class="skip-intro hidden">Acceder Rápido</button>
+    </div>
+
+    <main>
+        <!-- VISTA DE INICIO -->
+        <div id="spa-home" class="spa-view active">
+            <section id="inicio" class="hero">
+                <!-- Ambient blurred background -->
+                <div id="hero-ambient" class="hero-ambient"></div>
+                
+                <div class="hero-content">
+                    <img src="favicon.png" alt="Logo O.L." style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                    <h2>Miradas tras un Objetivo</h2>
+                    <h3 class="author-title signature-font">Óscar López García Fotógrafo</h3>
+                    <nav class="hero-nav">
+                        <ul>
+                            <li><a href="#" onclick="AppRouter.goTo('home'); return false;">Inicio</a></li>
+                            <li><a href="#" onclick="AppRouter.goTo('gallery'); return false;">Galería</a></li>
+                            <li><a href="#" onclick="AppRouter.goTo('gallery', 'contacto'); return false;">Contacto</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="hero-visual">
+                    <!-- Se usa canvas blindado en lugar de img para aplicar marcas de agua -->
+                    <canvas id="hero-carousel-canvas" class="hero-canvas"></canvas>
+                </div>
+            </section>
+
+            <section id="presentacion" class="presentation-section">
+                <div class="presentation-content">
+                    <h2>El Arte de Mirar</h2>
+                    <p>La fotografía no consiste en capturar la luz, sino en atrapar el tiempo. A través de este portal te invito a recorrer mi obra personal, donde la pasión por el detalle y el respeto por el claroscuro rinden tributo a esos momentos efímeros que merecen ser eternos.</p>
+                    <a href="#" onclick="AppRouter.goTo('gallery'); return false;" class="btn-submit" style="text-decoration: none; padding: 1rem 3rem; margin-top: 2rem; border-radius: 30px; display: inline-block;">Adentrarse en la Exposición</a>
+                </div>
+            </section>
+            
+            <footer>
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h2>Miradas tras un Objetivo</h2>
+                        <p class="signature-font">Óscar López García Fotógrafo</p>
+                    </div>
+                    <div class="footer-links">
+                        <p>&copy; 2026 Óscar López García. Todos los derechos reservados.</p>
+                        <p>Las imágenes de este sitio web están protegidas por derechos de autor. Prohibida su reproducción total o parcial sin autorización expresa.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- VISTA DE GALERÍA -->
+        <div id="spa-gallery" class="spa-view hidden">
+            <!-- Navbar simple para la Galería -->
+            <header class="gallery-header">
+                <div class="header-logo" style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="AppRouter.goTo('home');">
+                    <img src="favicon.png" alt="O.L." style="width: 35px; height: 35px; border-radius: 50%;">
+                    <h2 class="signature-font">Óscar López García</h2>
+                </div>
+                <nav class="header-nav">
+                    <ul>
+                        <li><a href="#" onclick="AppRouter.goTo('home'); return false;">Sala de Bienvenida</a></li>
+                        <li><a href="#" onclick="AppRouter.goTo('gallery'); return false;" class="active">Exposición</a></li>
+                        <li><a href="#" onclick="AppRouter.goTo('gallery', 'contacto'); return false;">Contacto</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <div style="padding-top: 5rem;">
+                <section id="galeria" class="gallery-section">
+                    <div class="filters">
+                        <button class="filter-btn active" data-filter="all">Recientes</button>
+                        <button class="filter-btn" data-filter="penitencia">Penitencia</button>
+                        <button class="filter-btn" data-filter="glorias">Glorias</button>
+                        <button class="filter-btn" data-filter="detalles">Detalles</button>
+                        <button class="filter-btn" data-filter="panoramicas">Panorámicas</button>
+                        <button class="filter-btn" data-filter="lugares">Lugares de Interés</button>
+                        <button class="filter-btn" data-filter="retratos">Retratos</button>
+                    </div>
+                    
+                    <div class="grid-container" id="gallery-grid">
+                        <!-- Gallery items will be injected by app.js -->
+                    </div>
+                </section>
+
+                <section id="contacto" class="contact-section">
+                    <div class="contact-card">
+                        <h2>Lleva el Arte a tu Hogar</h2>
+                        <p class="contact-message">"Si alguna de mis miradas ha logrado detener tu tiempo y deseas llevarte a casa una parte de esta pasión, estaré encantado de atenderte y asesorarte personalmente. Escríbeme sin compromiso para consultar precios y formatos Fine Art."</p>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 2.5rem; letter-spacing: 0.5px;">* Cada fotografía pertenece a una edición exclusiva limitada a <strong>15 copias</strong> en todo el mundo.</p>
+                        <div class="contact-methods">
+                            <a href="mailto:caroslogar@yahoo.com?subject=Consulta%20sobre%20tus%20fotograf%C3%ADas" class="btn-email">✉ Correo Electrónico</a>
+                            <a href="https://wa.me/34614443759?text=Hola%20%C3%93scar,%20me%20encantan%20tus%20fotos%20y%20querr%C3%ADa%20consultarte%20para%20adquirir%20alguna." target="_blank" class="btn-whatsapp">WhatsApp: 614 443 759</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <footer>
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <h2>Miradas tras un Objetivo</h2>
+                        <p class="signature-font">Óscar López García Fotógrafo</p>
+                    </div>
+                    <div class="footer-links">
+                        <p>&copy; 2026 Óscar López García. Todos los derechos reservados.</p>
+                        <p>Las imágenes de este sitio web están protegidas por derechos de autor. Prohibida su reproducción total o parcial sin autorización expresa.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Lightbox Modal (Global) -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox">&times;</span>
+        <div class="lightbox-content">
+            <div class="lightbox-image-container">
+                <canvas id="lightbox-canvas"></canvas>
+            </div>
+            <div class="lightbox-sidebar">
+                <h3 id="lb-title">Título</h3>
+                <p class="lb-location" id="lb-location">Localidad - Año</p>
+                <p class="lb-desc" id="lb-desc">Descripción...</p>
+                
+                <div class="lb-actions">
+                    <button id="btn-buy-email" class="btn-buy">Consultar por Email</button>
+                    <button id="btn-buy-wa" class="btn-whatsapp lb-btn">Consultar por WhatsApp</button>
+                </div>
+                <p class="buy-note">Venta directa de obras. <strong>Edición estrictamente limitada a 15 copias impresas.</strong></p>
+                
+                <div class="comments-section">
+                    <h4>Comentarios</h4>
+                    <p class="comments-disclaimer">Normas: Los comentarios deben ceñirse únicamente a la técnica fotográfica o al contenido artístico de la obra. Cualquier otro comentario será moderado.</p>
+                    
+                    <div id="comments-list" class="comments-list">
+                        <!-- Comments injected here -->
+                    </div>
+                    
+                    <form id="comment-form" class="comment-form">
+                        <input type="text" id="comment-name" placeholder="Tu nombre" required>
+                        <textarea id="comment-text" placeholder="Escribe un comentario técnico o artístico..." rows="3" required></textarea>
+                        <button type="submit" class="btn-submit">Publicar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js?v=17"></script>
+    <script>
+        // --- Router SPA Simple ---
+        const AppRouter = {
+            goTo: function(viewId, hash = '') {
+                document.querySelectorAll('.spa-view').forEach(el => {
+                    el.classList.add('hidden');
+                    el.classList.remove('active');
+                });
+                const target = document.getElementById('spa-' + viewId);
+                if (target) {
+                    target.classList.remove('hidden');
+                    target.classList.add('active');
+                }
+                window.scrollTo(0, 0);
+                if(hash) {
+                    setTimeout(() => {
+                        const el = document.getElementById(hash);
+                        if(el) el.scrollIntoView({behavior: 'smooth'});
+                    }, 100);
+                }
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const introOverlay = document.getElementById('intro-overlay');
+            const skipBtn = document.getElementById('skip-intro');
+            const startBtn = document.getElementById('start-intro');
+            const bgAudio = document.getElementById('bg-audio');
+
+            if (introOverlay) {
+                // Seleccionar DOS fotos originales al azar y mezclarlas
+                let fotosIntro = [
+                    'fotos/Cachorro 30x40.jpg',
+                    'fotos/Cristo de la Sed 30x40.jpg',
+                    'fotos/Candelaria 30x40.jpg',
+                    'fotos/Cristo Buena Muerte 30x40.jpg'
+                ];
+                fotosIntro = fotosIntro.sort(() => 0.5 - Math.random());
+                
+                const drawCanvas = (canvasId, srcPath) => {
+                    const canvasObj = document.getElementById(canvasId);
+                    if (!canvasObj) return;
+                    const img = new Image();
+                    img.src = srcPath;
+                    img.onload = () => {
+                        if (typeof drawWatermarkedImage === 'function') {
+                            drawWatermarkedImage(canvasObj, img, false);
+                        } else {
+                            const ctx = canvasObj.getContext('2d', { willReadFrequently: true });
+                            canvasObj.width = img.width;
+                            canvasObj.height = img.height;
+                            ctx.drawImage(img, 0, 0, img.width, img.height);
+                        }
+                    };
+                };
+
+                drawCanvas('intro-canvas-1', fotosIntro[0]);
+                drawCanvas('intro-canvas-2', fotosIntro[1]);
+
+                let introTimer;
+
+                // El botón mágico de la "Opción A" que inicia TODO
+                startBtn.onclick = () => {
+                    startBtn.style.display = 'none';
+                    skipBtn.classList.remove('hidden');
+                    
+                    // 1. Quitar la pausa a las animaciones de CSS eliminando la clase (afecta a los hijos)
+                    document.querySelectorAll('.anim-paused').forEach(el => {
+                        el.classList.remove('anim-paused');
+                    });
+
+                    // 2. Iniciar la música "Orinoco Flow" con fade in
+                    if(window.AudioManager) {
+                        window.AudioManager.playIntro();
+                    }
+                    
+                    // Mostrar widget de audio
+                    const audioWidgetElem = document.getElementById('audio-widget');
+                    if(audioWidgetElem) audioWidgetElem.classList.add('visible');
+
+                    // 3. Temporizador de 20 segundos
+                    introTimer = setTimeout(() => {
+                        closeIntro();
+                    }, 20000); 
+                };
+
+                skipBtn.onclick = () => {
+                    clearTimeout(introTimer);
+                    closeIntro();
+                };
+
+                function closeIntro() {
+                    introOverlay.classList.add('hidden');
+                    if(window.AudioManager) {
+                        window.AudioManager.transitionToPlaylist();
+                    }
+                    setTimeout(() => {
+                        introOverlay.style.display = 'none';
+                    }, 1500); 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
