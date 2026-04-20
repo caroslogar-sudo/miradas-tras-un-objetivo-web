@@ -192,7 +192,7 @@ let currentPhotoId = null;
 const firmaWebImg = new Image();
 firmaWebImg.src = 'firma_opt4_cursiva.png';
 
-document.fonts.ready.then(() => {
+document.fonts.ready.then(async () => {
     const hidePreloader = () => {
         const p = document.getElementById('preloader');
         if (p) {
@@ -201,37 +201,45 @@ document.fonts.ready.then(() => {
         }
     };
 
-    if (firmaWebImg.complete) {
-        initGallery();
-        initHeroCarousel();
+    const bootApp = async () => {
+        await initGallery(); // Esperamos a que lleguen TODAS las fotos de Supabase
+        initHeroCarousel();  // Ahora arranca el Hero con las fotos reales y mezcladas
         hidePreloader();
+    };
+
+    if (firmaWebImg.complete) {
+        bootApp();
     } else {
-        firmaWebImg.onload = () => {
-            initGallery();
-            initHeroCarousel();
-            hidePreloader();
-        };
-        firmaWebImg.onerror = () => {
-            initGallery();
-            initHeroCarousel();
-            hidePreloader();
-        };
+        firmaWebImg.onload = bootApp;
+        firmaWebImg.onerror = bootApp;
     }
 });
 
 // Cinematic Hero Carousel Logic
-const heroImages = [
-    'fotos/Cachorro 30x40.jpg',
-    'fotos/Cristo de la Sed 30x40.jpg',
-    'fotos/Candelaria 30x40.jpg',
-    'fotos/Cristo Buena Muerte 30x40.jpg'
-];
+let heroImages = [];
 let currentHeroIdx = 0;
 
 function initHeroCarousel() {
+    // 1. Llenar heroImages con toda la galería real en lugar del array fijo antiguo
+    if (fotografias && fotografias.length > 0) {
+        heroImages = fotografias.map(foto => {
+            let urlFoto = (foto.url || '').trim();
+            if (urlFoto && !urlFoto.startsWith('http') && !urlFoto.startsWith('fotos/')) {
+                urlFoto = 'fotos/' + urlFoto;
+            }
+            return urlFoto;
+        }).filter(url => url !== ''); // Quitamos URLs inválidas
+
+        // 2. Mezclamos todas las fotos aleatoriamente
+        heroImages = heroImages.sort(() => Math.random() - 0.5);
+    } else {
+        // Fallback por si falla internet
+        heroImages = ['fotos/Cachorro 30x40.jpg']; 
+    }
+
     const ambient = document.getElementById('hero-ambient');
     const heroCanvas = document.getElementById('hero-carousel-canvas');
-    if (!ambient || !heroCanvas) return;
+    if (!ambient || !heroCanvas || heroImages.length === 0) return;
 
     const drawSlide = (src) => {
         const img = new Image();
@@ -243,7 +251,7 @@ function initHeroCarousel() {
         };
         img.onerror = () => {
             console.warn("Fallo al cargar imagen de carrusel:", src);
-            heroCanvas.classList.remove('fade-out'); // Evitar que el canvas se quede invisible
+            heroCanvas.classList.remove('fade-out'); 
         };
     };
 
