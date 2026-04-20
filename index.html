@@ -29,7 +29,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&family=Cinzel:wght@400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <!-- Schema.org: Structured Data para Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Óscar López García",
+      "url": "https://oscarlopezfotografias.com",
+      "jobTitle": "Fotógrafo de Arte",
+      "description": "Fotógrafo especialista en Semana Santa de Sevilla, retratos y lugares de interés. Ediciones exclusivas limitadas a 15 copias Fine Art.",
+      "image": "https://oscarlopezfotografias.com/favicon.png",
+      "sameAs": [],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Miradas tras un Objetivo"
+      },
+      "knowsAbout": ["Fotografía Fine Art", "Semana Santa de Sevilla", "Fotografía de retrato", "Fotografía artística"]
+    }
+    </script>
     <link rel="stylesheet" href="styles.css?v=17">
+
 </head>
 <body oncontextmenu="return false;">
     <!-- Preloader Cinematográfico -->
@@ -249,16 +268,13 @@
                 // Al pulsar: música → fade out del overlay → aparece la segunda pantalla
                 startBtn.onclick = () => {
 
-                    // 1. Iniciar la música con fade in
-                    if(window.AudioManager) {
-                        window.AudioManager.playIntro();
-                    }
-
-                    // 2. Mostrar widget de audio
+                    // 1. Mostrar widget de audio
                     const audioWidgetElem = document.getElementById('audio-widget');
                     if(audioWidgetElem) audioWidgetElem.classList.add('visible');
 
-                    // 3. Fade out del overlay → segunda pantalla
+                    // 2. Fade out del overlay → segunda pantalla
+                    // NOTA: La música arranca DESPUÉS de que el overlay desaparezca,
+                    // evitando cualquier residuo sonoro durante la transición
                     closeIntro();
                 };
 
