@@ -47,19 +47,19 @@
     </div>
     <!-- Intro Overlay -->
     <div id="intro-overlay" class="intro-overlay">
-        <!-- BOTÓN DE ENTRADA (Activa Musica y Animaciones) -->
+        <!-- BOTÓN DE ENTRADA centrado sobre la imagen barroca -->
         <button id="start-intro" class="start-intro-btn">Adentrarse en la Exposición</button>
 
         <audio id="bg-audio" style="display: none;"></audio>
 
-        <!-- Fondo animado con DOS imágenes en transición cruzada -->
-        <div id="intro-bg-container" class="intro-bg-container anim-paused">
+        <!-- Fondo animado con DOS imágenes en transición cruzada (activo tras pulsar el botón) -->
+        <div id="intro-bg-container" class="intro-bg-container intro-bg-hidden">
             <canvas id="intro-canvas-1" class="intro-canvas intro-photo-1"></canvas>
             <canvas id="intro-canvas-2" class="intro-canvas intro-photo-2"></canvas>
         </div>
         
-        <!-- Texto central elegante -->
-        <div class="intro-title-wrapper anim-paused">
+        <!-- Texto central elegante (activo tras pulsar el botón) -->
+        <div class="intro-title-wrapper intro-title-hidden">
             <h1 class="signature-font intro-signature">Óscar López García</h1>
             <p class="intro-sub">Miradas tras un Objetivo</p>
         </div>
@@ -243,77 +243,38 @@
             const startBtn = document.getElementById('start-intro');
             const bgAudio = document.getElementById('bg-audio');
 
+
             if (introOverlay) {
-                // Seleccionar DOS fotos originales al azar y mezclarlas
-                let fotosIntro = [
-                    'fotos/Cachorro 30x40.jpg',
-                    'fotos/Cristo de la Sed 30x40.jpg',
-                    'fotos/Candelaria 30x40.jpg',
-                    'fotos/Cristo Buena Muerte 30x40.jpg'
-                ];
-                fotosIntro = fotosIntro.sort(() => 0.5 - Math.random());
-                
-                const drawCanvas = (canvasId, srcPath) => {
-                    const canvasObj = document.getElementById(canvasId);
-                    if (!canvasObj) return;
-                    const img = new Image();
-                    img.src = srcPath;
-                    img.onload = () => {
-                        if (typeof drawWatermarkedImage === 'function') {
-                            drawWatermarkedImage(canvasObj, img, false);
-                        } else {
-                            const ctx = canvasObj.getContext('2d', { willReadFrequently: true });
-                            canvasObj.width = img.width;
-                            canvasObj.height = img.height;
-                            ctx.drawImage(img, 0, 0, img.width, img.height);
-                        }
-                    };
-                };
 
-                drawCanvas('intro-canvas-1', fotosIntro[0]);
-                drawCanvas('intro-canvas-2', fotosIntro[1]);
-
-                let introTimer;
-
-                // El botón mágico de la "Opción A" que inicia TODO
+                // Al pulsar: música → fade out del overlay → aparece la segunda pantalla
                 startBtn.onclick = () => {
-                    startBtn.style.display = 'none';
-                    skipBtn.classList.remove('hidden');
-                    
-                    // 1. Quitar la pausa a las animaciones de CSS eliminando la clase (afecta a los hijos)
-                    document.querySelectorAll('.anim-paused').forEach(el => {
-                        el.classList.remove('anim-paused');
-                    });
 
-                    // 2. Iniciar la música "Orinoco Flow" con fade in
+                    // 1. Iniciar la música con fade in
                     if(window.AudioManager) {
                         window.AudioManager.playIntro();
                     }
-                    
-                    // Mostrar widget de audio
+
+                    // 2. Mostrar widget de audio
                     const audioWidgetElem = document.getElementById('audio-widget');
                     if(audioWidgetElem) audioWidgetElem.classList.add('visible');
 
-                    // 3. Temporizador de 20 segundos
-                    introTimer = setTimeout(() => {
-                        closeIntro();
-                    }, 20000); 
-                };
-
-                skipBtn.onclick = () => {
-                    clearTimeout(introTimer);
+                    // 3. Fade out del overlay → segunda pantalla
                     closeIntro();
                 };
 
-                function closeIntro() {
-                    introOverlay.classList.add('hidden');
-                    if(window.AudioManager) {
-                        window.AudioManager.transitionToPlaylist();
-                    }
+                const closeIntro = () => {
+                    // Transición CSS de opacidad (1.5s definida en styles.css)
+                    introOverlay.style.opacity = '0';
                     setTimeout(() => {
                         introOverlay.style.display = 'none';
-                    }, 1500); 
-                }
+                        introOverlay.classList.add('hidden');
+
+                        // Pasar de "Orinoco Flow" a la playlist general
+                        if(window.AudioManager) {
+                            window.AudioManager.transitionToPlaylist();
+                        }
+                    }, 1500);
+                };
             }
         });
     </script>

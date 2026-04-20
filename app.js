@@ -328,10 +328,36 @@ function renderGallery(filter) {
         ? fotografias
         : fotografias.filter(f => slugTematica(f.tematica) === filter));
     
-    // Restaurado: Si estamos en la portada (Recientes), mezclar aleatoriamente y mostrar 3 diferentes cada vez
+    // Portada "Recientes": excluir penitencia y alternar fotos en cada carga
     if (filter === 'all') {
-        fotosToRender = [...fotosToRender].sort(() => 0.5 - Math.random());
-        fotosToRender = fotosToRender.slice(0, 3);
+        // 1. Excluir temática 'penitencia'
+        fotosToRender = fotosToRender.filter(f => slugTematica(f.tematica) !== 'penitencia');
+        
+        // 2. Sistema de alternancia: recordar las ya mostradas para no repetir
+        const FOTOS_POR_CARGA = 3;
+        let yaMostradas = [];
+        try {
+            yaMostradas = JSON.parse(sessionStorage.getItem('portada_mostradas') || '[]');
+        } catch(_) { /* sessionStorage no disponible */ }
+        
+        // Separar las que aún no se han visto de las ya mostradas
+        let sinVer = fotosToRender.filter(f => !yaMostradas.includes(f.id));
+        
+        // Si quedan menos fotos sin ver que las necesarias, reiniciar el ciclo
+        if (sinVer.length < FOTOS_POR_CARGA) {
+            yaMostradas = [];
+            sinVer = [...fotosToRender];
+        }
+        
+        // Mezclar aleatoriamente y seleccionar
+        sinVer = sinVer.sort(() => 0.5 - Math.random());
+        fotosToRender = sinVer.slice(0, FOTOS_POR_CARGA);
+        
+        // Guardar los IDs mostrados para la próxima carga
+        const idsNuevos = fotosToRender.map(f => f.id);
+        try {
+            sessionStorage.setItem('portada_mostradas', JSON.stringify([...yaMostradas, ...idsNuevos]));
+        } catch(_) { /* sessionStorage no disponible */ }
     }
     
     fotosToRender.forEach(foto => {

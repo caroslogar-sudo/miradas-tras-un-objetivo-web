@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" viewBox="0 0 32 42">
+  <!-- Dedo índice señalando hacia arriba -->
+  <rect x="12" y="1" width="8" height="22" rx="4" fill="#D4A853" stroke="#6B4226" stroke-width="1.2"/>
+  <!-- Palma de la mano -->
+  <path d="M4,20 L4,32 Q4,40 16,40 Q28,40 28,32 L28,20 Z" fill="#D4A853" stroke="#6B4226" stroke-width="1.2"/>
+  <!-- Dedo corazón (cerrado) -->
+  <rect x="3" y="23" width="8" height="12" rx="4" fill="#D4A853" stroke="#6B4226" stroke-width="1"/>
+  <!-- Dedo anular (cerrado) -->
+  <rect x="21" y="24" width="8" height="11" rx="4" fill="#D4A853" stroke="#6B4226" stroke-width="1"/>
+  <!-- Pulgar (lateral) -->
+  <rect x="1" y="26" width="7" height="9" rx="3.5" fill="#D4A853" stroke="#6B4226" stroke-width="1"/>
+</svg>

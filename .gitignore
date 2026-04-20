@@ -1,17 +1,8 @@
-# Carpeta de producción (se genera con el script bat)
-web_lista_para_subir/
-web_miradas/
-
-# Entorno virtual y dependencias
+# Entorno virtual y dependencias Python (si se vuelven a usar)
 .venv/
 venv/
-env/
-dist/
-build/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 
 # Archivos de configuración local o temporales
 .DS_Store
@@ -19,13 +10,13 @@ Thumbs.db
 *.log
 .gemini/
 
-# Fotos originales si estuvieran fuera de la carpeta de assets (opcional)
-# fotos_originales/
-
-# Archivos comprimidos pesados (exceden el límite de 100MB de GitHub)
+# Archivos comprimidos pesados
 *.zip
 *.rar
 *.7z
 
-# Notas de supabase o credenciales si las hubiera (solo por precaución)
+# Credenciales y contraseñas (NUNCA subir)
+*password*
+*Pasword*
 *Supabase*.txt
+*.env
