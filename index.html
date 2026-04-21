@@ -50,7 +50,7 @@
     <link rel="stylesheet" href="styles.css?v=18">
 
 </head>
-<body oncontextmenu="return false;">
+<body style="user-select: none;">
     <!-- Preloader Cinematográfico -->
     <div id="preloader">
     </div>
@@ -297,7 +297,11 @@
                             <textarea id="photo-description" placeholder="Pega aquí el análisis de Gemini..."></textarea>
                         </div>
                         <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem;">Publicar en la Web Oficial</button>
-                        <p id="publish-status" style="text-align:center; font-size: 0.8rem; margin-top: 1rem;"></p>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px;">
+                            <p id="publish-status" style="text-align:center; font-size: 0.8rem; margin: 0;"></p>
+                            <button id="btn-undo-upload" class="hidden" style="background: rgba(255, 68, 68, 0.2); color: #ff6666; border: 1px solid #ff4444; padding: 7px 20px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; font-weight: bold;">Deshacer última publicación</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -306,7 +310,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js?v=18"></script>
+    <script src="app.js?v=20"></script>
     <script>
         // --- Router SPA Simple ---
         const AppRouter = {

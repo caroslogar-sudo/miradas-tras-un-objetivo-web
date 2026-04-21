@@ -145,34 +145,45 @@ initPremiumUX();
 // BLINDAJE ANTI-ROBO DE FOTOGRAFÍAS — NIVEL MÁXIMO
 // ============================================================
 (function () {
-    // 1. Bloquear menú contextual (clic derecho) en toda la página
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    // 1. Bloquear menú contextual (clic derecho) (EXCEPTO EN ADMINISTRACIÓN)
+    document.addEventListener('contextmenu', e => {
+        if (e.target.closest('#spa-admin')) return; 
+        e.preventDefault();
+    });
 
     // 2. Bloquear arrastre de imágenes y canvas
     document.addEventListener('dragstart', e => e.preventDefault());
 
-    // 3. Bloquear selección de texto e imágenes
-    document.addEventListener('selectstart', e => e.preventDefault());
+    // 3. Bloquear selección de texto e imágenes (EXCEPTO EN ADMINISTRACIÓN)
+    document.addEventListener('selectstart', e => {
+        if (e.target.closest('#spa-admin')) return;
+        e.preventDefault();
+    });
 
-    // 4. Bloquear atajos de teclado peligrosos
+    // 4. Bloquear atajos peligrosos (EXCEPTO EN ADMINISTRACIÓN)
     document.addEventListener('keydown', e => {
+        // Si estamos en administración, permitimos TODO el teclado (Ctrl+V, etc)
+        if (e.target.closest('#spa-admin')) return;
+
         const key = e.key;
         const ctrl = e.ctrlKey || e.metaKey;
         const shift = e.shiftKey;
 
-        // Ctrl+S (guardar), Ctrl+U (código fuente), Ctrl+P (imprimir)
         if (ctrl && ['s', 'u', 'p'].includes(key.toLowerCase())) {
             e.preventDefault(); return false;
         }
-        // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools)
         if (ctrl && shift && ['i', 'j', 'c', 'k'].includes(key.toLowerCase())) {
             e.preventDefault(); return false;
         }
-        // F12 (DevTools), PrintScreen
         if (key === 'F12' || key === 'PrintScreen') {
             e.preventDefault(); return false;
         }
     });
+
+    // Asegurar que el cursor y el pegado funcionen en Admin
+    const adminCSS = document.createElement('style');
+    adminCSS.innerHTML = "#spa-admin, #spa-admin * { user-select: text !important; -webkit-user-select: text !important; cursor: auto !important; }";
+    document.head.appendChild(adminCSS);
 })();
 
 // ============================================================
@@ -689,8 +700,12 @@ function DOMPurify(str) {
     // --- Lógica de Subida y Automatización ---
     const photoFile = document.getElementById('photo-file');
     const btnPublish = document.getElementById('btn-publish-all');
+    const btnUndo = document.getElementById('btn-undo-upload');
     const publishStatus = document.getElementById('publish-status');
     const photoPreview = document.getElementById('photo-preview');
+
+    let lastUploadedId = null;
+    let lastUploadedPath = null;
 
     if(photoFile) {
         photoFile.onchange = (e) => {
@@ -699,6 +714,7 @@ function DOMPurify(str) {
                 photoPreview.src = URL.createObjectURL(file);
                 photoPreview.style.display = 'block';
                 document.getElementById('upload-status').innerText = "Imagen lista: " + file.name;
+                btnUndo.classList.add('hidden'); // Ocultar deshacer al elegir nueva foto
             }
         };
     }
@@ -734,7 +750,7 @@ function DOMPurify(str) {
                 const publicUrl = urlData.publicUrl;
 
                 // 3. Crear registro en la tabla 'fotografias'
-                const { error: dbError } = await supabaseClient.from('fotografias').insert([
+                const { data: dbData, error: dbError } = await supabaseClient.from('fotografias').insert([
                     { 
                         titulo: title, 
                         localidad: location, 
@@ -742,19 +758,58 @@ function DOMPurify(str) {
                         descripcion: description, 
                         url: publicUrl 
                     }
-                ]);
+                ]).select();
 
                 if (dbError) throw dbError;
 
+                // Guardar referencias para poder deshacer
+                lastUploadedId = dbData[0].id;
+                lastUploadedPath = fileName;
+
                 publishStatus.style.color = "var(--accent)";
-                publishStatus.innerText = "¡Obra publicada con éxito! La web se actualizará sola.";
-                setTimeout(() => window.location.reload(), 2000);
+                publishStatus.innerText = "¡Obra publicada con éxito!";
+                btnUndo.classList.remove('hidden');
+                
+                // Limpiar formulario para la siguiente foto (MULTISUBIDA)
+                document.getElementById('photo-title').value = "";
+                document.getElementById('photo-description').value = "";
+                photoFile.value = "";
+                photoPreview.style.display = "none";
+                document.getElementById('upload-status').innerText = "📸 Seleccionar otra fotografía";
+                btnPublish.disabled = false;
 
             } catch (err) {
                 console.error(err);
                 publishStatus.style.color = "#ff6666";
                 publishStatus.innerText = "Error en el proceso: " + err.message;
                 btnPublish.disabled = false;
+            }
+        };
+    }
+
+    if(btnUndo) {
+        btnUndo.onclick = async () => {
+            if(!lastUploadedId || !lastUploadedPath) return;
+
+            if(!confirm("¿Estás seguro de que quieres eliminar esta última subida de la web?")) return;
+
+            btnUndo.innerText = "Eliminando...";
+
+            try {
+                // 1. Borrar de la base de datos
+                await supabaseClient.from('fotografias').delete().eq('id', lastUploadedId);
+                // 2. Borrar del Storage
+                await supabaseClient.storage.from('fotos').remove([lastUploadedPath]);
+
+                publishStatus.style.color = "var(--text-dim)";
+                publishStatus.innerText = "Subida eliminada correctamente.";
+                btnUndo.classList.add('hidden');
+                lastUploadedId = null;
+                lastUploadedPath = null;
+            } catch (err) {
+                alert("Error al deshacer: " + err.message);
+            } finally {
+                btnUndo.innerText = "Deshacer última publicación";
             }
         };
     }
