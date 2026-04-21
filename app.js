@@ -635,3 +635,136 @@ function DOMPurify(str) {
     div.innerText = str;
     return div.innerHTML;
 }
+
+// ============================================================
+// SISTEMA DE ADMINISTRACIÓN Y AUTOMATIZACIÓN (ÓSCAR LÓPEZ)
+// ============================================================
+(function() {
+    const loginForm = document.getElementById('login-form');
+    const authScreen = document.getElementById('admin-login-screen');
+    const ctrlPanel = document.getElementById('admin-control-panel');
+    const loginError = document.getElementById('login-error');
+
+    if (!loginForm) return;
+
+    loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = "caroslogar@gmail.com";
+        const password = document.getElementById('admin-password').value;
+        loginError.style.color = "var(--text-dim)";
+        loginError.innerText = "Verificando identidad...";
+
+        try {
+            // Primer intento: Login
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                // Si el error es de credenciales inválidas y es la primera vez, intentamos registro
+                if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
+                    const { data: regData, error: regError } = await supabaseClient.auth.signUp({ email, password });
+                    if (regError) {
+                        loginError.style.color = "#ff6666";
+                        loginError.innerText = "Error: " + regError.message;
+                    } else {
+                        loginError.style.color = "var(--accent)";
+                        loginError.innerText = "¡Cuenta proyectada! Revisa caroslogar@gmail.com para confirmar y vuelve a entrar.";
+                    }
+                } else {
+                    loginError.style.color = "#ff6666";
+                    loginError.innerText = "Acceso denegado: " + error.message;
+                }
+                return;
+            }
+
+            // Login con éxito
+            authScreen.classList.add('hidden');
+            ctrlPanel.classList.remove('hidden');
+            loginError.innerText = "";
+        } catch (err) {
+            loginError.style.color = "#ff6666";
+            loginError.innerText = "Fallo de conexión con el estudio.";
+        }
+    };
+
+    // --- Lógica de Subida y Automatización ---
+    const photoFile = document.getElementById('photo-file');
+    const btnPublish = document.getElementById('btn-publish-all');
+    const publishStatus = document.getElementById('publish-status');
+    const photoPreview = document.getElementById('photo-preview');
+
+    if(photoFile) {
+        photoFile.onchange = (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                photoPreview.src = URL.createObjectURL(file);
+                photoPreview.style.display = 'block';
+                document.getElementById('upload-status').innerText = "Imagen lista: " + file.name;
+            }
+        };
+    }
+
+    if(btnPublish) {
+        btnPublish.onclick = async () => {
+            const file = photoFile.files[0];
+            const title = document.getElementById('photo-title').value;
+            const location = document.getElementById('photo-location').value;
+            const category = document.getElementById('photo-category').value;
+            const description = document.getElementById('photo-description').value;
+
+            if(!file || !title) {
+                alert("Es esencial subir la foto y ponerle un título.");
+                return;
+            }
+
+            publishStatus.style.color = "var(--text-dim)";
+            publishStatus.innerText = "Iniciando subida a la nube...";
+            btnPublish.disabled = true;
+
+            try {
+                // 1. Subir a Supabase Storage (Bucket 'fotos')
+                const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+                const { data: upData, error: upError } = await supabaseClient.storage
+                    .from('fotos')
+                    .upload(fileName, file);
+
+                if (upError) throw upError;
+
+                // 2. Obtener URL pública
+                const { data: urlData } = supabaseClient.storage.from('fotos').getPublicUrl(fileName);
+                const publicUrl = urlData.publicUrl;
+
+                // 3. Crear registro en la tabla 'fotografias'
+                const { error: dbError } = await supabaseClient.from('fotografias').insert([
+                    { 
+                        titulo: title, 
+                        localidad: location, 
+                        tematica: category, 
+                        descripcion: description, 
+                        url: publicUrl 
+                    }
+                ]);
+
+                if (dbError) throw dbError;
+
+                publishStatus.style.color = "var(--accent)";
+                publishStatus.innerText = "¡Obra publicada con éxito! La web se actualizará sola.";
+                setTimeout(() => window.location.reload(), 2000);
+
+            } catch (err) {
+                console.error(err);
+                publishStatus.style.color = "#ff6666";
+                publishStatus.innerText = "Error en el proceso: " + err.message;
+                btnPublish.disabled = false;
+            }
+        };
+    }
+
+    // --- ACTIVADOR SECRETO ---
+    // Si la URL contiene ?admin, saltamos directamente a la vista protegida
+    if (window.location.search.includes('admin')) {
+        // Usamos un pequeño retardo para asegurar que el router está listo
+        setTimeout(() => {
+            if(window.AppRouter) window.AppRouter.goTo('admin');
+        }, 500);
+    }
+})();

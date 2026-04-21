@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOTIPO: Gestión de Exposición - Óscar López</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050608;
+            --card: #0d0f12;
+            --accent: #c5a059;
+            --text: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --input-bg: #16191d;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            /* Fondo sutil degradado similar a tu web */
+            background-image: radial-gradient(circle at center, #101216 0%, #050608 100%);
+        }
+        .admin-card {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            width: 100%;
+            max-width: 850px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            position: relative;
+        }
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(197, 160, 89, 0.05);
+            pointer-events: none;
+            border-radius: 15px;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            letter-spacing: 4px;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 10px rgba(197, 160, 89, 0.2);
+        }
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: 0.3s;
+            outline: none;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent);
+            background: #1c2025;
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 180px;
+            line-height: 1.6;
+        }
+        .upload-zone {
+            border: 2px dashed rgba(197, 160, 89, 0.25);
+            padding: 3rem;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 2.5rem;
+            background: rgba(255,255,255,0.01);
+        }
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: rgba(197, 160, 89, 0.04);
+            transform: scale(1.01);
+        }
+        .btn-publish {
+            background: linear-gradient(135deg, #c5a059 0%, #a68545 100%);
+            color: #050608;
+            border: none;
+            padding: 1.4rem 2rem;
+            width: 100%;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.4s;
+            margin-top: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .btn-publish:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(197, 160, 89, 0.3);
+            filter: brightness(1.1);
+        }
+        .note {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 2rem;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        .row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .flex-1 { flex: 1; min-width: 280px; }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <h1>Gestión de Exposición</h1>
+        
+        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+            <p style="font-size: 1.4rem; margin-bottom: 8px; color: var(--accent);">📷 Seleccionar Fotografía</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">Arrastra el archivo aquí o haz clic para buscar</p>
+            <input type="file" id="file-input" style="display:none">
+        </div>
+
+        <div class="form-group">
+            <label>Título Detallado de la Obra</label>
+            <input type="text" placeholder="Copia aquí el título artístico...">
+        </div>
+
+        <div class="row">
+            <div class="form-group flex-1">
+                <label>Localidad / Fecha / Evento</label>
+                <input type="text" placeholder="Ej: Sevilla - Semana Santa 2024">
+            </div>
+            <div class="form-group flex-1">
+                <label>Categoría de Sala</label>
+                <select>
+                    <option>Penitencia</option>
+                    <option>Glorias</option>
+                    <option>Detalles</option>
+                    <option>Panorámicas</option>
+                    <option>Lugares de Interés</option>
+                    <option>Retratos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Descripción Artística Completa (Texto de Gemini)</label>
+            <textarea placeholder="Pega aquí todo el texto descriptivo generado por la IA..."></textarea>
+        </div>
+
+        <button class="btn-publish" onclick="handleSim()">Publicar en Exposición</button>
+
+        <p class="note">
+            Esta es una herramienta de pre-visualización.<br>
+            Tú mantendrás la última palabra sobre cada dato antes de que sea subido a la red.
+        </p>
+    </div>
+
+    <script>
+        function handleSim() {
+            const btn = document.querySelector('.btn-publish');
+            btn.innerHTML = 'Subiendo Datos...';
+            btn.style.opacity = '0.7';
+            setTimeout(() => {
+                alert('¡SIMULACIÓN COMPLETADA!\n\nEn la versión real:\n1. Tu fotografía se procesaría y subiría.\n2. Los metadatos de Gemini quedarían registrados.\n3. Tu portfolio se actualizaría automáticamente.');
+                btn.innerHTML = 'Publicar en Exposición';
+                btn.style.opacity = '1';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

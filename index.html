@@ -195,7 +195,7 @@
         </div>
     </main>
 
-    <!-- Lightbox Modal (Global) -->
+    <!-- Lightbox Modal (Global) Elijo restaurarlo aquí -->
     <div id="lightbox" class="lightbox">
         <span class="close-lightbox">&times;</span>
         <div class="lightbox-content">
@@ -231,6 +231,80 @@
         </div>
     </div>
 
+    <!-- ZONA DE ADMINISTRACIÓN (Invisible y Protegida) -->
+    <div id="spa-admin" class="spa-view hidden">
+        <div id="admin-login-screen" class="admin-auth-container">
+            <div class="admin-card">
+                <h2 class="signature-font" style="text-align: center; margin-bottom: 0.5rem; font-size: 2.2rem;">Acceso Privado</h2>
+                <p style="text-align: center; color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2rem;">Solo para Óscar López García</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="admin-email" value="caroslogar@gmail.com" readonly style="opacity: 0.7; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="admin-password" placeholder="Tu clave maestra..." required>
+                    </div>
+                    <button type="submit" class="btn-submit" style="width: 100%; border-radius: 30px; margin-top: 1rem;">Entrar al Estudio</button>
+                    <p id="login-error" style="color: #ff6666; font-size: 0.8rem; margin-top: 1rem; text-align: center; min-height: 1.2rem;"></p>
+                </form>
+            </div>
+        </div>
+
+        <div id="admin-control-panel" class="admin-panel-container hidden" style="padding: 2rem;">
+            <div class="admin-dashboard-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(197,160,89,0.1); padding-bottom: 1rem;">
+                    <h2 class="signature-font" style="margin:0; font-size: 1.8rem;">Gestión de Exposición</h2>
+                    <button onclick="window.AudioManager.playIntro(); location.reload();" class="btn-buy" style="font-size: 0.7rem; padding: 5px 15px;">Cerrar Sesión</button>
+                </div>
+
+                <div class="admin-form-grid">
+                    <!-- Columna Izquierda: Subida -->
+                    <div class="admin-upload-area">
+                        <div class="upload-zone" onclick="document.getElementById('photo-file').click()">
+                            <p id="upload-status">📸 Seleccionar Fotografía</p>
+                            <input type="file" id="photo-file" accept="image/*" style="display:none">
+                            <img id="photo-preview" style="max-width: 100%; max-height: 200px; margin-top:1rem; display:none; border-radius: 5px;">
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Datos de Gemini -->
+                    <div class="admin-data-area">
+                        <div class="form-group">
+                            <label>Título de la Obra</label>
+                            <input type="text" id="photo-title" placeholder="Copia aquí el título artístico...">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Localidad / Año</label>
+                                <input type="text" id="photo-location" placeholder="Ej: Sevilla - 2024">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Temática</label>
+                                <select id="photo-category">
+                                    <option value="penitencia">Penitencia</option>
+                                    <option value="glorias">Glorias</option>
+                                    <option value="detalles">Detalles</option>
+                                    <option value="panoramicas">Panorámicas</option>
+                                    <option value="lugares">Lugares de Interés</option>
+                                    <option value="retratos">Retratos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción completa (Texto de Gemini)</label>
+                            <textarea id="photo-description" placeholder="Pega aquí el análisis de Gemini..."></textarea>
+                        </div>
+                        <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem;">Publicar en la Web Oficial</button>
+                        <p id="publish-status" style="text-align:center; font-size: 0.8rem; margin-top: 1rem;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js?v=18"></script>
     <script>
@@ -262,6 +336,14 @@
             const startBtn = document.getElementById('start-intro');
             const bgAudio = document.getElementById('bg-audio');
 
+            // --- DETECCIÓN DE ADMINISTRADOR (ÓSCAR LÓPEZ) ---
+            if (window.location.search.includes('admin')) {
+                // 1. Ocultamos la cortina de entrada inmediatamente
+                if(introOverlay) introOverlay.style.display = 'none';
+                // 2. Saltamos a la vista de administración
+                AppRouter.goTo('admin');
+                return; // No ejecutamos el resto de la intro
+            }
 
             if (introOverlay) {
 
