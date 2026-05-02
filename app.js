@@ -687,7 +687,6 @@ function openLightbox(id) {
 
     document.getElementById('lb-title').innerText = (I18n.getLang() === 'en' && foto.titulo_en) ? foto.titulo_en : foto.titulo;
     document.getElementById('lb-location').innerText = `${foto.localidad} - ${foto.anio}`;
-    document.getElementById('lb-desc').innerText = (I18n.getLang() === 'en' && foto.descripcion_en) ? foto.descripcion_en : foto.descripcion;
 
     // Mostrar información de edición limitada
     const total = foto.copias_totales || 15;

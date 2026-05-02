@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST — Lightbox Definitivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&family=Cinzel:wght@400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=21">
+    <style>
+        .test-badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #ff4a4a;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            z-index: 99999;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body style="user-select:none; background: #0f1115;">
+
+    <div class="test-badge">⚠️ ARCHIVO DE TEST</div>
+
+    <!-- El mismo lightbox idéntico al de la web original pero SIN la etiqueta lb-desc -->
+    <div id="lightbox" class="lightbox active" style="display: flex;">
+        <span class="close-lightbox" style="position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: #a0a0a0; z-index: 1001; cursor: pointer;">&times;</span>
+        <div class="lightbox-content">
+            <div class="lightbox-image-container">
+                <canvas id="lightbox-canvas"></canvas>
+            </div>
+            
+            <div class="lightbox-sidebar">
+                <h3 id="lb-title">El Cachorro en Procesión</h3>
+                <!-- Aquí está la localidad y el año tal cual se venía haciendo, sin iconos -->
+                <p class="lb-location" id="lb-location" style="margin-bottom: 2.5rem;">Sevilla - 2024</p>
+                
+                <!-- ¡LA DESCRIPCIÓN (lb-desc) HA SIDO ELIMINADA DE AQUÍ! -->
+                
+                <div class="lb-actions">
+                    <button class="btn-buy">Consultar por Email</button>
+                    <button class="btn-whatsapp lb-btn" style="background: #25D366; color: white; border: none; padding: 1rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 0.5rem;">
+                        Consultar por WhatsApp
+                    </button>
+                    <button class="btn-share-fb" style="background: #1877F2; color: white; border: none; padding: 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        Compartir en Facebook
+                    </button>
+                </div>
+
+                <p class="buy-note">Venta directa de obras. <strong>Edición estrictamente limitada a 15 copias impresas.</strong></p>
+                
+                <div class="comments-section">
+                    <h4>Comentarios</h4>
+                    <p class="comments-disclaimer">Normas: Los comentarios deben ceñirse únicamente a la técnica fotográfica o al contenido artístico de la obra. Cualquier otro comentario será moderado.</p>
+                    
+                    <div id="comments-list" class="comments-list">
+                        <div class="comment">
+                            <div>
+                                <span class="comment-author">José Luis</span>
+                                <span class="comment-date">02-05-2026</span>
+                            </div>
+                            <div class="comment-content">Impresionante el uso del claroscuro en esta toma, me encanta la textura del manto.</div>
+                        </div>
+                    </div>
+                    
+                    <form id="comment-form" class="comment-form" onsubmit="event.preventDefault();">
+                        <input type="text" id="comment-name" placeholder="Tu nombre" required>
+                        <textarea id="comment-text" placeholder="Escribe un comentario técnico o artístico..." rows="3" required></textarea>
+                        <button type="submit" class="btn-submit">Publicar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('lightbox-canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = 'fotos/Cachorro 30x40.jpg';
+            img.onload = () => {
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+            };
+            img.onerror = () => {
+                canvas.width = 600;
+                canvas.height = 900;
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(0, 0, 600, 900);
+                ctx.fillStyle = '#c9a84c';
+                ctx.font = '22px Playfair Display, serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('El Cachorro en Procesión', 300, 430);
+            };
+        });
+    </script>
+</body>
+</html>
