@@ -210,7 +210,28 @@
             <div class="lightbox-sidebar">
                 <h3 id="lb-title">Título</h3>
                 <p class="lb-location" id="lb-location">Localidad - Año</p>
-                
+
+                <!-- NUEVA BARRA DE ESTADÍSTICAS E INTERACCIÓN -->
+                <div class="photo-stats-bar" style="display: flex; align-items: center; gap: 1rem; border-top: 1px solid rgba(201,168,76,0.2); border-bottom: 1px solid rgba(201,168,76,0.2); padding: 0.8rem 0; margin-bottom: 1.5rem;">
+                    <div class="stat-views" title="Veces que se ha visto esta obra" style="color: var(--text-secondary); font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                        <span id="lb-views">0</span>
+                    </div>
+                    
+                    <div style="flex: 1;"></div>
+                    
+                    <!-- Botón Me Gusta -->
+                    <button class="stat-btn btn-like" id="btn-like-action" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); padding: 4px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.3s ease; font-family: 'Inter', sans-serif;">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>
+                        <span id="lb-likes">0</span>
+                    </button>
+                    
+                    <!-- Botón No Me Gusta -->
+                    <button class="stat-btn btn-dislike" id="btn-dislike-action" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); padding: 4px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.3s ease; font-family: 'Inter', sans-serif;">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.378 1.378 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51.136.02.285.037.443.051.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.896 1.896 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.314-1.088-.094-2.29-1.112-2.83-.16-.085-.333-.153-.516-.2.102-.27-.151-.55-.138-.823-.053-.984-.962-1.636-1.89-1.42l-.261.065A1.378 1.378 0 0 0 9.606 2.6c-.22.816-.533 2.512-.062 4.51-.136-.02-.285-.037-.443-.051-.713-.065-1.669-.071-2.516.211-.518.173-.994.68-1.2 1.272a1.896 1.896 0 0 0 .234 1.734c-.058.118-.103.242-.138.362-.314 1.088.094 2.29 1.112 2.83.16.085.333.153.516.2-.102.27-.151.55-.138.823.053.984.962 1.636 1.89 1.42z"/></svg>
+                        <span id="lb-dislikes">0</span>
+                    </button>
+                </div>
                 <div class="lb-actions">
                     <button id="btn-buy-email" class="btn-buy">Consultar por Email</button>
                     <button id="btn-buy-wa" class="btn-whatsapp lb-btn">Consultar por WhatsApp</button>
@@ -266,6 +287,25 @@
                     <h2 class="signature-font" style="margin:0; font-size: 1.8rem;">Gestión de Exposición</h2>
                     <button onclick="window.AudioManager.playIntro(); location.reload();" class="btn-buy" style="font-size: 0.7rem; padding: 5px 15px;">Cerrar Sesión</button>
                 </div>
+                <div class="admin-stats-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.3); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 1.5rem; font-family: var(--font-heading); border-bottom: 1px solid rgba(201,168,76,0.3); padding-bottom: 10px;">Rendimiento de la Exposición</h3>
+                    
+                    <div class="admin-stats-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                        <!-- Visitas Totales -->
+                        <div class="stat-big-box" style="text-align: center; padding: 2rem; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;">Visitas Totales Web</p>
+                            <p id="admin-total-visits" style="font-size: 3.5rem; color: white; margin: 10px 0; font-family: var(--font-heading);">0</p>
+                        </div>
+
+                        <!-- Top 5 Fotos -->
+                        <div style="background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem;">
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Top 5 Obras (Más Gustadas)</p>
+                            <ul id="admin-top-photos" class="stat-top-list" style="list-style: none; padding: 0; margin: 0;">
+                                <!-- Cargado dinámicamente -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="admin-form-grid">
                     <!-- Columna Izquierda: Subida -->
@@ -279,6 +319,26 @@
 
                     <!-- Columna Derecha: Datos de la Obra -->
                     <div class="admin-data-area">
+                        <!-- Botón Generador IA -->
+                        <div style="background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+                                <span>✨</span> Asistente Creativo
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Genera propuestas artísticas basadas en la fotografía seleccionada, usando tu propia clave API de Gemini de forma segura y privada.</p>
+                            
+                            <input type="password" id="gemini-api-key" placeholder="Pega tu API Key de Gemini aquí..." style="width: 100%; padding: 0.6rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 4px; font-size: 0.8rem;">
+                            
+                            <button id="btn-mock-ai" onclick="generateTitlesWithAI(this)" style="background: var(--accent-gold); color: black; border: none; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                                <span>✨</span> Generar Títulos Artísticos (ES/EN)
+                            </button>
+
+                            <!-- Resultados de la IA -->
+                            <div id="mock-ai-results" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(201,168,76,0.2);">
+                                <p style="font-size: 0.8rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Propuestas Generadas:</p>
+                                <div id="ai-results-container"></div>
+                                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 10px; text-align: center;">Haz clic en una opción para rellenar los campos automáticamente.</p>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label>Título de la Obra (Español)</label>
                             <input type="text" id="photo-title" placeholder="Título artístico en español...">

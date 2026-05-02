@@ -422,6 +422,10 @@ async function initGallery() {
                 console.error("Fallo final:", error);
             } else {
                 fotografias = data || [];
+                // Incrementar visitas globales (solo lectura pública, no admin)
+                if (!window.location.search.includes('admin')) {
+                    supabaseClient.rpc('increment_visitas_totales').then().catch(e => console.error("Error stats:", e));
+                }
             }
         } catch (e) {
             console.error("Corte red:", e);
@@ -688,6 +692,25 @@ function openLightbox(id) {
     document.getElementById('lb-title').innerText = (I18n.getLang() === 'en' && foto.titulo_en) ? foto.titulo_en : foto.titulo;
     document.getElementById('lb-location').innerText = `${foto.localidad} - ${foto.anio}`;
 
+    // Actualizar y gestionar Estadísticas de la foto (Likes/Vistas)
+    const viewCount = foto.vistas || 0;
+    document.getElementById('lb-views').innerText = viewCount + 1; // Sumamos la actual visualmente
+    document.getElementById('lb-likes').innerText = foto.likes || 0;
+    document.getElementById('lb-dislikes').innerText = foto.dislikes || 0;
+    
+    // Resetear apariencia botones
+    document.getElementById('btn-like-action').className = 'stat-btn btn-like';
+    document.getElementById('btn-dislike-action').className = 'stat-btn btn-dislike';
+
+    // Incrementar en backend sin bloquear la UI
+    if (!window.location.search.includes('admin')) {
+        supabaseClient.rpc('increment_photo_stat', { foto_id: id, stat_type: 'vistas' }).then().catch(e => console.error(e));
+    }
+
+    // Configurar interacciones
+    document.getElementById('btn-like-action').onclick = () => togglePhotoStat(id, 'likes');
+    document.getElementById('btn-dislike-action').onclick = () => togglePhotoStat(id, 'dislikes');
+
     // Mostrar información de edición limitada
     const total = foto.copias_totales || 15;
     const vendidas = foto.copias_vendidas || 0;
@@ -863,6 +886,7 @@ function DOMPurify(str) {
             authScreen.classList.add('hidden');
             ctrlPanel.classList.remove('hidden');
             loginError.innerText = "";
+            loadAdminStats(); // Cargar panel de estadísticas
         } catch (err) {
             console.error("Fallo crítico en el cliente:", err);
             loginError.style.color = "#ff6666";
@@ -1001,3 +1025,142 @@ function DOMPurify(str) {
         }, 500);
     }
 })();
+
+// ============================================================
+// FUNCIONES GLOBALES DE ESTADÍSTICAS E IA
+// ============================================================
+
+window.togglePhotoStat = async function(fotoId, type) {
+    const btnLike = document.getElementById('btn-like-action');
+    const btnDislike = document.getElementById('btn-dislike-action');
+    const targetBtn = type === 'likes' ? btnLike : btnDislike;
+    const oppositeBtn = type === 'likes' ? btnDislike : btnLike;
+    const targetClass = type === 'likes' ? 'active-like' : 'active-dislike';
+    const oppositeClass = type === 'likes' ? 'active-dislike' : 'active-like';
+
+    if (targetBtn.classList.contains(targetClass)) return; // Ya presionado
+
+    // UI Updates inmediatas (Optimistic)
+    if (oppositeBtn.classList.contains(oppositeClass)) {
+        oppositeBtn.classList.remove(oppositeClass);
+        let oppSpan = oppositeBtn.querySelector('span');
+        oppSpan.innerText = Math.max(0, parseInt(oppSpan.innerText) - 1);
+        supabaseClient.rpc('increment_photo_stat', { foto_id: fotoId, stat_type: type === 'likes' ? 'dislikes' : 'likes', increment_val: -1 }).then().catch(e=>console.log(e));
+    }
+
+    targetBtn.classList.add(targetClass);
+    let span = targetBtn.querySelector('span');
+    span.innerText = parseInt(span.innerText) + 1;
+
+    // Persistir en backend
+    supabaseClient.rpc('increment_photo_stat', { foto_id: fotoId, stat_type: type }).then().catch(e=>console.error(e));
+};
+
+window.loadAdminStats = async function() {
+    try {
+        // Cargar total global
+        const { data: globalData } = await supabaseClient.from('estadisticas_globales').select('visitas_totales').eq('id', 1).single();
+        if (globalData) {
+            document.getElementById('admin-total-visits').innerText = globalData.visitas_totales.toLocaleString();
+        }
+
+        // Cargar top 5 fotos
+        const { data: topFotos } = await supabaseClient.from('fotografias').select('titulo, vistas, likes').order('likes', { ascending: false }).limit(5);
+        if (topFotos) {
+            const list = document.getElementById('admin-top-photos');
+            list.innerHTML = topFotos.map((f, i) => `
+                <li>
+                    <span style="display: flex; gap: 10px;">
+                        <strong style="color: var(--accent-gold);">${i+1}.</strong> ${f.titulo || 'Sin Título'}
+                    </span>
+                    <span style="color: white; display: flex; gap: 15px;">
+                        <span style="color: var(--text-secondary); font-size: 0.8rem;">👁️ ${f.vistas || 0}</span>
+                        <span>🤍 ${f.likes || 0}</span>
+                    </span>
+                </li>
+            `).join('');
+        }
+    } catch (e) {
+        console.error("Error al cargar stats:", e);
+    }
+};
+
+window.generateTitlesWithAI = async function(btn) {
+    const fileInput = document.getElementById('photo-file');
+    const apiKeyInput = document.getElementById('gemini-api-key');
+    const apiKey = apiKeyInput.value.trim() || localStorage.getItem('gemini_api_key');
+    
+    if (!apiKey) {
+        alert("Por favor, introduce tu API Key de Gemini.");
+        return;
+    }
+    
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Primero selecciona una fotografía para analizar.");
+        return;
+    }
+
+    localStorage.setItem('gemini_api_key', apiKey); // Guardar para no pedirla siempre
+    apiKeyInput.value = apiKey; // Reflejar en input
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span>⏳</span> Analizando Obra (IA)...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    reader.onloadend = async () => {
+        try {
+            const base64Data = reader.result.split(',')[1];
+            
+            const prompt = `Actúa como un experto curador de arte y poeta. Observa esta fotografía y sugiere 3 títulos artísticos, evocadores y profundos que capturen su esencia, emoción, o su naturaleza espiritual/cofrade si es el caso. 
+Devuelve ÚNICAMENTE un objeto JSON estricto con esta estructura exacta (sin formato de código markdown):
+{ "opciones": [ { "es": "Título español", "en": "English title" }, ... ] }`;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: file.type, data: base64Data } }
+                        ]
+                    }]
+                })
+            });
+
+            if (!response.ok) throw new Error("Error en la API de Gemini. Comprueba tu API Key.");
+            
+            const data = await response.json();
+            const textResult = data.candidates[0].content.parts[0].text;
+            
+            // Limpiar posible formato markdown que pueda colar la IA
+            const cleanJson = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleanJson);
+
+            const container = document.getElementById('ai-results-container');
+            container.innerHTML = parsed.opciones.map((opt, i) => `
+                <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 6px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent;" 
+                     onmouseover="this.style.borderColor='var(--accent-gold)'" onmouseout="this.style.borderColor='transparent'" 
+                     onclick="document.getElementById('photo-title').value = '${opt.es}'; document.getElementById('photo-title-en').value = '${opt.en}';">
+                    <p style="color: white; font-weight: bold; font-family: var(--font-heading);">${i+1}. ${opt.es}</p>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; font-style: italic;">${opt.en}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('mock-ai-results').style.display = 'block';
+
+        } catch (e) {
+            console.error(e);
+            alert("Fallo en la generación IA: " + e.message);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+    };
+    reader.readAsDataURL(file);
+};
