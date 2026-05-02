@@ -900,8 +900,6 @@ function DOMPurify(str) {
             const titleEn = document.getElementById('photo-title-en').value;
             const location = document.getElementById('photo-location').value;
             const category = document.getElementById('photo-category').value;
-            const description = document.getElementById('photo-description').value;
-            const descriptionEn = document.getElementById('photo-description-en').value;
             const totalCopies = parseInt(document.getElementById('photo-total-copies').value) || 15;
             const soldCopies = parseInt(document.getElementById('photo-sold-copies').value) || 0;
 
@@ -933,9 +931,7 @@ function DOMPurify(str) {
                         titulo: title, 
                         titulo_en: titleEn,
                         localidad: location, 
-                        tematica: category, 
-                        descripcion: description, 
-                        descripcion_en: descriptionEn,
+                        tematica: category,
                         url: publicUrl,
                         copias_totales: totalCopies,
                         copias_vendidas: soldCopies

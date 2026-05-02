@@ -277,7 +277,7 @@
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Datos de Gemini -->
+                    <!-- Columna Derecha: Datos de la Obra -->
                     <div class="admin-data-area">
                         <div class="form-group">
                             <label>Título de la Obra (Español)</label>
@@ -314,42 +314,8 @@
                                 <input type="number" id="photo-sold-copies" value="0" min="0">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Descripción (Español - Texto de Gemini)</label>
-                            <textarea id="photo-description" placeholder="Análisis artístico en español..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Description (English - Gemini Text)</label>
-                            <textarea id="photo-description-en" placeholder="Artistic analysis in English..."></textarea>
-                        </div>
-                        <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem;">Publicar en la Web Oficial</button>
                         
-                        </div>
-                        <div class="gemini-helper">
-                            <h4>✨ Asistente de Narrativa Gemini</h4>
-                            <p>Copia estos prompts para obtener descripciones artísticas perfectas:</p>
-                            
-                            <div style="margin-bottom: 1rem;">
-                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">1. Descripción en Español</span>
-                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt ES copiado');">
-                                    Actúa como un experto en arte barroco y fotografía Fine Art. Analiza esta fotografía y redacta una descripción de unas 60-80 palabras que evoque emociones, mencione el uso del claroscuro y subraye la exclusividad de esta edición limitada a 15 copias mundiales. Tono culto pero cercano.
-                                </div>
-                            </div>
-
-                            <div style="margin-bottom: 1rem;">
-                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">2. Traducción al Inglés Artístico</span>
-                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt EN copiado');">
-                                    Translate the previous artistic description into elegant, professional English suitable for a Fine Art gallery. Maintain the mystical tone and the emphasis on the "limited edition of 15 copies".
-                                </div>
-                            </div>
-
-                            <div>
-                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">3. Narrativa para Facebook (Storytelling)</span>
-                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt FB copiado');">
-                                    Actúa como un historiador del arte y experto en simbología. Analiza esta fotografía y escribe una publicación para Facebook de unos 3-4 párrafos. Explica la simbología de la escena, el uso dramático de la luz y termina con una pregunta abierta para generar debate técnico. Menciona la exclusividad de las 15 copias. Tono profesional y místico.
-                                </div>
-                            </div>
-                        </div>
+                        <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem; margin-top: 1rem;">Publicar en la Web Oficial</button>
                     </div>
                 </div>
             </div>
