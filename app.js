@@ -586,7 +586,8 @@ function renderGallery(filter) {
                 canvas.style.width = '100%';
                 canvas.style.height = 'auto';
             }
-            drawWatermarkedImage(canvas, img, false);
+            const skipWatermark = foto.con_firma === false;
+            drawWatermarkedImage(canvas, img, false, skipWatermark);
         };
         img.onerror = () => {
             console.warn(`No se encontró la foto: ${urlFoto} — verifica el nombre exacto en Hostinger`);
@@ -595,7 +596,7 @@ function renderGallery(filter) {
     });
 }
 
-function drawWatermarkedImage(canvas, img, isHero) {
+function drawWatermarkedImage(canvas, img, isHero, skipWatermark = false) {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     ctx.imageSmoothingEnabled = true;
@@ -605,7 +606,7 @@ function drawWatermarkedImage(canvas, img, isHero) {
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    if (isHero) {
+    if (isHero || skipWatermark) {
         return;
     }
 
@@ -730,7 +731,8 @@ function openLightbox(id) {
     const canvas = document.getElementById('lightbox-canvas');
     const img = new Image();
     img.src = foto.url;
-    img.onload = () => drawWatermarkedImage(canvas, img, false);
+    const skipWatermark = foto.con_firma === false;
+    img.onload = () => drawWatermarkedImage(canvas, img, false, skipWatermark);
     img.onerror = () => drawFallbackImage(canvas, foto.titulo);
 
     renderComments(id);
@@ -926,6 +928,7 @@ function DOMPurify(str) {
             const category = document.getElementById('photo-category').value;
             const totalCopies = parseInt(document.getElementById('photo-total-copies').value) || 15;
             const soldCopies = parseInt(document.getElementById('photo-sold-copies').value) || 0;
+            const applySignature = document.getElementById('photo-signature').checked;
 
             if(!file || !title) {
                 alert("Es esencial subir la foto y ponerle un título.");
@@ -958,7 +961,8 @@ function DOMPurify(str) {
                         tematica: category,
                         url: publicUrl,
                         copias_totales: totalCopies,
-                        copias_vendidas: soldCopies
+                        copias_vendidas: soldCopies,
+                        con_firma: applySignature
                     }
                 ]).select();
 
@@ -974,7 +978,8 @@ function DOMPurify(str) {
                 
                 // Limpiar formulario para la siguiente foto (MULTISUBIDA)
                 document.getElementById('photo-title').value = "";
-                document.getElementById('photo-description').value = "";
+                document.getElementById('photo-title-en').value = "";
+                document.getElementById('photo-signature').checked = true;
                 photoFile.value = "";
                 photoPreview.style.display = "none";
                 document.getElementById('upload-status').innerText = "📸 Seleccionar otra fotografía";
