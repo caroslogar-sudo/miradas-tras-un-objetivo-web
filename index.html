@@ -381,6 +381,8 @@
                         </div>
 
                         <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem; margin-top: 1rem;">Publicar en la Web Oficial</button>
+                        <p id="publish-status" style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: var(--text-dim);"></p>
+                        <button id="btn-undo-upload" class="hidden" style="width: 100%; background: #444; color: white; border: none; border-radius: 30px; padding: 0.8rem; margin-top: 0.5rem; cursor: pointer; font-size: 0.8rem;">Deshacer última subida</button>
                     </div>
                 </div>
             </div>
@@ -389,7 +391,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js?v=30"></script>
+    <script src="app.js?v=31"></script>
     <script>
         // --- Router SPA Simple ---
         const AppRouter = {
