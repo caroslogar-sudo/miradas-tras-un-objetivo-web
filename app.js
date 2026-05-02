@@ -1124,7 +1124,7 @@ window.generateTitlesWithAI = async function(btn) {
 Devuelve ÚNICAMENTE un objeto JSON estricto con esta estructura exacta (sin formato de código markdown):
 { "opciones": [ { "es": "Título español", "en": "English title" }, ... ] }`;
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
