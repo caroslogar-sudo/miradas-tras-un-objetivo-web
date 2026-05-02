@@ -227,7 +227,7 @@ initPremiumUX();
 (function () {
     // 1. Bloquear menú contextual (clic derecho) (EXCEPTO EN ADMINISTRACIÓN)
     document.addEventListener('contextmenu', e => {
-        if (e.target.closest('#spa-admin')) return; 
+        if (e.target.closest && e.target.closest('#spa-admin')) return; 
         e.preventDefault();
     });
 
@@ -236,13 +236,13 @@ initPremiumUX();
 
     // 3. Bloquear selección de texto e imágenes (EXCEPTO EN ADMINISTRACIÓN)
     document.addEventListener('selectstart', e => {
-        if (e.target.closest('#spa-admin')) return;
+        if (e.target.closest && e.target.closest('#spa-admin')) return;
         e.preventDefault();
     });
 
     // 4. Bloquear atajos peligrosos y captura de pantalla
     document.addEventListener('keydown', e => {
-        if (e.target.closest('#spa-admin')) return;
+        if (e.target.closest && e.target.closest('#spa-admin')) return;
 
         const key = e.key;
         const ctrl = e.ctrlKey || e.metaKey;
@@ -914,7 +914,7 @@ function DOMPurify(str) {
                 photoPreview.src = URL.createObjectURL(file);
                 photoPreview.style.display = 'block';
                 document.getElementById('upload-status').innerText = "Imagen lista: " + file.name;
-                btnUndo.classList.add('hidden'); // Ocultar deshacer al elegir nueva foto
+                if (btnUndo) btnUndo.classList.add('hidden'); // Ocultar deshacer al elegir nueva foto
             }
         };
     }
@@ -1104,7 +1104,13 @@ window.generateTitlesWithAI = async function(btn) {
     console.log("--- Iniciando diagnóstico de modelos Gemini ---");
     fetch(`https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`)
         .then(r => r.json())
-        .then(d => console.log("Modelos disponibles:", d))
+        .then(d => {
+            console.log("Modelos disponibles:", d);
+            if (d.models) {
+                const names = d.models.map(m => m.name.replace('models/', '')).join("\n");
+                alert("DEBUG - Modelos disponibles en tu cuenta:\n" + names);
+            }
+        })
         .catch(e => console.error("Fallo al listar modelos:", e));
     
     if (!fileInput.files || fileInput.files.length === 0) {
