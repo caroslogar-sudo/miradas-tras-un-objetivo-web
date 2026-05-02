@@ -1100,19 +1100,6 @@ window.generateTitlesWithAI = async function(btn) {
         return;
     }
 
-    // DIAGNÓSTICO: Ver modelos disponibles
-    console.log("--- Iniciando diagnóstico de modelos Gemini ---");
-    fetch(`https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`)
-        .then(r => r.json())
-        .then(d => {
-            console.log("Modelos disponibles:", d);
-            if (d.models) {
-                const names = d.models.map(m => m.name.replace('models/', '')).join("\n");
-                alert("DEBUG - Modelos disponibles en tu cuenta:\n" + names);
-            }
-        })
-        .catch(e => console.error("Fallo al listar modelos:", e));
-    
     if (!fileInput.files || fileInput.files.length === 0) {
         alert("Primero selecciona una fotografía para analizar.");
         return;
@@ -1137,7 +1124,7 @@ window.generateTitlesWithAI = async function(btn) {
 Devuelve ÚNICAMENTE un objeto JSON estricto con esta estructura exacta (sin formato de código markdown):
 { "opciones": [ { "es": "Título español", "en": "English title" }, ... ] }`;
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
