@@ -1137,7 +1137,11 @@ Devuelve ÚNICAMENTE un objeto JSON estricto con esta estructura exacta (sin for
                 })
             });
 
-            if (!response.ok) throw new Error("Error en la API de Gemini. Comprueba tu API Key.");
+            if (!response.ok) {
+                const errorDetail = await response.text();
+                console.error("Detalle de fallo de Gemini:", errorDetail);
+                throw new Error("Error " + response.status + " en la API de Gemini: " + errorDetail);
+            }
             
             const data = await response.json();
             const textResult = data.candidates[0].content.parts[0].text;
