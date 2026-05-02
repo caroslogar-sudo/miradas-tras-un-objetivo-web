@@ -47,7 +47,7 @@
       "knowsAbout": ["Fotografía Fine Art", "Semana Santa de Sevilla", "Fotografía de retrato", "Fotografía artística"]
     }
     </script>
-    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="styles.css?v=20">
 
 </head>
 <body style="user-select: none;">
@@ -146,6 +146,11 @@
                         <li><a href="#" onclick="AppRouter.goTo('home'); return false;">Sala de Bienvenida</a></li>
                         <li><a href="#" onclick="AppRouter.goTo('gallery'); return false;" class="active">Exposición</a></li>
                         <li><a href="#" onclick="AppRouter.goTo('gallery', 'contacto'); return false;">Contacto</a></li>
+                        <li class="lang-switcher">
+                            <button onclick="I18n.setLang('es')" class="btn-lang active" id="btn-es">ES</button>
+                            <span style="color:rgba(255,255,255,0.2)">|</span>
+                            <button onclick="I18n.setLang('en')" class="btn-lang" id="btn-en">EN</button>
+                        </li>
                     </ul>
                 </nav>
             </header>
@@ -173,7 +178,7 @@
                         <p class="contact-message">"Si alguna de mis miradas ha logrado detener tu tiempo y deseas llevarte a casa una parte de esta pasión, estaré encantado de atenderte y asesorarte personalmente. Escríbeme sin compromiso para consultar precios y formatos Fine Art."</p>
                         <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 2.5rem; letter-spacing: 0.5px;">* Cada fotografía pertenece a una edición exclusiva limitada a <strong>15 copias</strong> en todo el mundo.</p>
                         <div class="contact-methods">
-                            <a href="mailto:caroslogar@yahoo.com?subject=Consulta%20sobre%20tus%20fotograf%C3%ADas" class="btn-email">✉ Correo Electrónico</a>
+                            <a href="mailto:miradas.oscarlopez@gmail.com?subject=Consulta%20sobre%20tus%20fotograf%C3%ADas" class="btn-email">✉ Correo Electrónico</a>
                             <a href="https://wa.me/34614443759?text=Hola%20%C3%93scar,%20me%20encantan%20tus%20fotos%20y%20querr%C3%ADa%20consultarte%20para%20adquirir%20alguna." target="_blank" class="btn-whatsapp">WhatsApp: 614 443 759</a>
                         </div>
                     </div>
@@ -210,6 +215,10 @@
                 <div class="lb-actions">
                     <button id="btn-buy-email" class="btn-buy">Consultar por Email</button>
                     <button id="btn-buy-wa" class="btn-whatsapp lb-btn">Consultar por WhatsApp</button>
+                    <button id="btn-share-fb" class="btn-share-fb" style="background: #1877F2; color: white; border: none; padding: 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>
+                        Compartir en Facebook
+                    </button>
                 </div>
                 <p class="buy-note">Venta directa de obras. <strong>Edición estrictamente limitada a 15 copias impresas.</strong></p>
                 
@@ -272,8 +281,12 @@
                     <!-- Columna Derecha: Datos de Gemini -->
                     <div class="admin-data-area">
                         <div class="form-group">
-                            <label>Título de la Obra</label>
-                            <input type="text" id="photo-title" placeholder="Copia aquí el título artístico...">
+                            <label>Título de la Obra (Español)</label>
+                            <input type="text" id="photo-title" placeholder="Título artístico en español...">
+                        </div>
+                        <div class="form-group">
+                            <label>Title (English)</label>
+                            <input type="text" id="photo-title-en" placeholder="Artistic title in English...">
                         </div>
                         <div style="display: flex; gap: 1rem;">
                             <div class="form-group" style="flex: 1;">
@@ -292,15 +305,51 @@
                                 </select>
                             </div>
                         </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Edición (Copias Totales)</label>
+                                <input type="number" id="photo-total-copies" value="15" min="1">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Copias Vendidas</label>
+                                <input type="number" id="photo-sold-copies" value="0" min="0">
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label>Descripción completa (Texto de Gemini)</label>
-                            <textarea id="photo-description" placeholder="Pega aquí el análisis de Gemini..."></textarea>
+                            <label>Descripción (Español - Texto de Gemini)</label>
+                            <textarea id="photo-description" placeholder="Análisis artístico en español..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Description (English - Gemini Text)</label>
+                            <textarea id="photo-description-en" placeholder="Artistic analysis in English..."></textarea>
                         </div>
                         <button id="btn-publish-all" class="btn-submit" style="width: 100%; border-radius: 30px; padding: 1.2rem;">Publicar en la Web Oficial</button>
                         
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px;">
-                            <p id="publish-status" style="text-align:center; font-size: 0.8rem; margin: 0;"></p>
-                            <button id="btn-undo-upload" class="hidden" style="background: rgba(255, 68, 68, 0.2); color: #ff6666; border: 1px solid #ff4444; padding: 7px 20px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; font-weight: bold;">Deshacer última publicación</button>
+                        </div>
+                        <div class="gemini-helper">
+                            <h4>✨ Asistente de Narrativa Gemini</h4>
+                            <p>Copia estos prompts para obtener descripciones artísticas perfectas:</p>
+                            
+                            <div style="margin-bottom: 1rem;">
+                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">1. Descripción en Español</span>
+                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt ES copiado');">
+                                    Actúa como un experto en arte barroco y fotografía Fine Art. Analiza esta fotografía y redacta una descripción de unas 60-80 palabras que evoque emociones, mencione el uso del claroscuro y subraye la exclusividad de esta edición limitada a 15 copias mundiales. Tono culto pero cercano.
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">2. Traducción al Inglés Artístico</span>
+                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt EN copiado');">
+                                    Translate the previous artistic description into elegant, professional English suitable for a Fine Art gallery. Maintain the mystical tone and the emphasis on the "limited edition of 15 copies".
+                                </div>
+                            </div>
+
+                            <div>
+                                <span style="font-size: 0.7rem; color: var(--accent-gold); text-transform: uppercase;">3. Narrativa para Facebook (Storytelling)</span>
+                                <div class="gemini-prompt-box" onclick="navigator.clipboard.writeText(this.innerText); alert('Prompt FB copiado');">
+                                    Actúa como un historiador del arte y experto en simbología. Analiza esta fotografía y escribe una publicación para Facebook de unos 3-4 párrafos. Explica la simbología de la escena, el uso dramático de la luz y termina con una pregunta abierta para generar debate técnico. Menciona la exclusividad de las 15 copias. Tono profesional y místico.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -340,14 +389,26 @@
             const startBtn = document.getElementById('start-intro');
             const bgAudio = document.getElementById('bg-audio');
 
-            // --- DETECCIÓN DE ADMINISTRADOR (ÓSCAR LÓPEZ) ---
+            // --- DETECCIÓN DE HASH Y RUTA ---
+            const handleHashRoute = () => {
+                const hash = window.location.hash.replace('#', '');
+                if (hash === 'gallery' || hash === 'contacto') {
+                    if (introOverlay) introOverlay.style.display = 'none';
+                    AppRouter.goTo('gallery', hash === 'contacto' ? 'contacto' : '');
+                } else if (hash === 'home' || hash === '') {
+                    // No hacemos nada, dejamos que la intro siga su curso si es la primera vez
+                }
+            };
+
             if (window.location.search.includes('admin')) {
-                // 1. Ocultamos la cortina de entrada inmediatamente
                 if(introOverlay) introOverlay.style.display = 'none';
-                // 2. Saltamos a la vista de administración
                 AppRouter.goTo('admin');
-                return; // No ejecutamos el resto de la intro
+                return;
             }
+
+            // Ejecutar al cargar y al cambiar el hash
+            handleHashRoute();
+            window.addEventListener('hashchange', handleHashRoute);
 
             if (introOverlay) {
 

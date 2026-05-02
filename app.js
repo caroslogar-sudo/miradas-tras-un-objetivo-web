@@ -98,6 +98,86 @@ window.AudioManager = (function () {
     };
 })();
 
+// =======================================================
+// MÓDULO DE INTERNACIONALIZACIÓN (ES/EN)
+// =======================================================
+window.I18n = (function () {
+    let currentLang = 'es';
+    const translations = {
+        es: {
+            nav_welcome: "Sala de Bienvenida",
+            nav_exhibition: "Exposición",
+            nav_contact: "Contacto",
+            contact_title: "Lleva el Arte a tu Hogar",
+            contact_desc: '"Si alguna de mis miradas ha logrado detener tu tiempo y deseas llevarte a casa una parte de esta pasión, estaré encantado de atenderte y asesorarte personalmente. Escríbeme sin compromiso para consultar precios y formatos Fine Art."',
+            contact_disclaimer: "* Cada fotografía pertenece a una edición exclusiva limitada a <strong>15 copias</strong> en todo el mundo.",
+            buy_wa: "Consultar por WhatsApp",
+            buy_email: "Consultar por Email",
+            buy_note: "Venta directa de obras. Edición estrictamente limitada.",
+            comments_title: "Comentarios",
+            comments_rules: "Normas: Los comentarios deben ceñirse únicamente a la técnica fotográfica...",
+            lb_copies_left: "Quedan {n} disponibles",
+            lb_sold_out: "OBRA AGOTADA"
+        },
+        en: {
+            nav_welcome: "Welcome Hall",
+            nav_exhibition: "Exhibition",
+            nav_contact: "Contact",
+            contact_title: "Bring Art Into Your Home",
+            contact_desc: '"If any of my gazes has managed to stop your time and you wish to take home a piece of this passion, I would be delighted to assist and advise you personally. Write to me without obligation to consult prices and Fine Art formats."',
+            contact_disclaimer: "* Each photograph belongs to an exclusive edition limited to <strong>15 copies</strong> worldwide.",
+            buy_wa: "Enquire via WhatsApp",
+            buy_email: "Enquire via Email",
+            buy_note: "Direct sale of works. Strictly limited edition.",
+            comments_title: "Comments",
+            comments_rules: "Rules: Comments must strictly relate to photographic technique...",
+            lb_copies_left: "{n} copies remaining",
+            lb_sold_out: "SOLD OUT"
+        }
+    };
+
+    function updateStaticUI() {
+        const t = translations[currentLang];
+        // Nav Links
+        const navLinks = document.querySelectorAll('.header-nav a');
+        if (navLinks.length >= 3) {
+            navLinks[0].innerText = t.nav_welcome;
+            navLinks[1].innerText = t.nav_exhibition;
+            navLinks[2].innerText = t.nav_contact;
+        }
+        // Contact Section
+        const contactTitle = document.querySelector('.contact-section h2');
+        if (contactTitle) contactTitle.innerText = t.contact_title;
+        const contactDesc = document.querySelector('.contact-message');
+        if (contactDesc) contactDesc.innerText = t.contact_desc;
+        const contactDisc = document.querySelector('.contact-card p strong');
+        if (contactDisc) contactDisc.closest('p').innerHTML = t.contact_disclaimer;
+
+        // Lightbox static
+        const commentsTitle = document.querySelector('.comments-section h4');
+        if (commentsTitle) commentsTitle.innerText = t.comments_title;
+        const btnBuyEmail = document.getElementById('btn-buy-email');
+        if (btnBuyEmail) btnBuyEmail.innerText = t.buy_email;
+        const btnBuyWa = document.getElementById('btn-buy-wa');
+        if (btnBuyWa) btnBuyWa.innerText = t.buy_wa;
+    }
+
+    return {
+        setLang: function (lang) {
+            currentLang = lang;
+            document.querySelectorAll('.btn-lang').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('btn-' + lang);
+            if (btn) btn.classList.add('active');
+            
+            updateStaticUI();
+            if (typeof renderGallery === 'function') renderGallery(document.querySelector('.filter-btn.active').dataset.filter);
+            if (currentPhotoId && typeof openLightbox === 'function') openLightbox(currentPhotoId);
+        },
+        getLang: () => currentLang,
+        t: (key) => translations[currentLang][key] || key
+    };
+})();
+
 // ============================================================
 // UI PREMIUM: CURSOR, OBSERVER, AUDIO WIDGET
 // ============================================================
@@ -142,7 +222,7 @@ function initPremiumUX() {
 initPremiumUX();
 
 // ============================================================
-// BLINDAJE ANTI-ROBO DE FOTOGRAFÍAS — NIVEL MÁXIMO
+// BLINDAJE ANTI-ROBO DE FOTOGRAFÍAS — NIVEL GALERÍA DE ARTE
 // ============================================================
 (function () {
     // 1. Bloquear menú contextual (clic derecho) (EXCEPTO EN ADMINISTRACIÓN)
@@ -160,25 +240,51 @@ initPremiumUX();
         e.preventDefault();
     });
 
-    // 4. Bloquear atajos peligrosos (EXCEPTO EN ADMINISTRACIÓN)
+    // 4. Bloquear atajos peligrosos y captura de pantalla
     document.addEventListener('keydown', e => {
-        // Si estamos en administración, permitimos TODO el teclado (Ctrl+V, etc)
         if (e.target.closest('#spa-admin')) return;
 
         const key = e.key;
         const ctrl = e.ctrlKey || e.metaKey;
         const shift = e.shiftKey;
 
-        if (ctrl && ['s', 'u', 'p'].includes(key.toLowerCase())) {
-            e.preventDefault(); return false;
+        // Bloqueo de atajos de inspección y guardado
+        if (ctrl && ['s', 'u', 'p', 'c', 'v'].includes(key.toLowerCase())) {
+            e.preventDefault();
         }
         if (ctrl && shift && ['i', 'j', 'c', 'k'].includes(key.toLowerCase())) {
-            e.preventDefault(); return false;
+            e.preventDefault();
         }
-        if (key === 'F12' || key === 'PrintScreen') {
-            e.preventDefault(); return false;
+        if (key === 'F12') {
+            e.preventDefault();
+        }
+
+        // Blindaje contra "Print Screen"
+        if (key === 'PrintScreen') {
+            alert("Esta obra está protegida por Derechos de Autor. La captura de pantalla no está permitida para preservar la exclusividad de la edición limitada.");
+            e.preventDefault();
         }
     });
+
+    // 5. Protección contra impresión (CSS Dinámico)
+    const printProtection = document.createElement('style');
+    printProtection.innerHTML = `
+        @media print {
+            body { display: none !important; }
+        }
+        .item-canvas-container, .lightbox-image-container {
+            position: relative;
+        }
+        /* Capa de cristal protector */
+        .item-canvas-container::after, .lightbox-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            background: transparent;
+        }
+    `;
+    document.head.appendChild(printProtection);
 
     // Asegurar que el cursor y el pegado funcionen en Admin
     const adminCSS = document.createElement('style');
@@ -231,50 +337,77 @@ let heroImages = [];
 let currentHeroIdx = 0;
 
 function initHeroCarousel() {
-    // 1. Llenar heroImages con toda la galería real en lugar del array fijo antiguo
+    const ambient = document.getElementById('hero-ambient');
+    const heroCanvas = document.getElementById('hero-carousel-canvas');
+    if (!ambient || !heroCanvas) return;
+
+    // 1. Construir lista de URLs candidatas desde la galería real
+    let candidateUrls = [];
     if (fotografias && fotografias.length > 0) {
-        heroImages = fotografias.map(foto => {
+        candidateUrls = fotografias.map(foto => {
             let urlFoto = (foto.url || '').trim();
             if (urlFoto && !urlFoto.startsWith('http') && !urlFoto.startsWith('fotos/')) {
                 urlFoto = 'fotos/' + urlFoto;
             }
             return urlFoto;
-        }).filter(url => url !== ''); // Quitamos URLs inválidas
-
-        // 2. Mezclamos todas las fotos aleatoriamente
-        heroImages = heroImages.sort(() => Math.random() - 0.5);
+        }).filter(url => url !== '');
     } else {
         // Fallback por si falla internet
-        heroImages = ['fotos/Cachorro 30x40.jpg']; 
+        heroImages = ['fotos/Cachorro 30x40.jpg'];
+        startCarousel();
+        return;
     }
 
-    const ambient = document.getElementById('hero-ambient');
-    const heroCanvas = document.getElementById('hero-carousel-canvas');
-    if (!ambient || !heroCanvas || heroImages.length === 0) return;
-
-    const drawSlide = (src) => {
+    // 2. Precargar todas las imágenes y quedarnos SOLO con las verticales (height > width)
+    //    Esto garantiza que las panorámicas nunca aparecen en la pantalla de presentación
+    const checks = candidateUrls.map(url => new Promise(resolve => {
         const img = new Image();
-        img.src = src;
-        img.onload = () => {
-            ambient.style.backgroundImage = `url('${src}')`;
-            drawWatermarkedImage(heroCanvas, img, true);
-            heroCanvas.classList.remove('fade-out');
-        };
-        img.onerror = () => {
-            console.warn("Fallo al cargar imagen de carrusel:", src);
-            heroCanvas.classList.remove('fade-out'); 
-        };
-    };
+        img.onload = () => resolve(img.naturalHeight > img.naturalWidth ? url : null);
+        img.onerror = () => resolve(null); // Si falla la carga, descartarla
+        img.src = url;
+    }));
 
-    drawSlide(heroImages[0]);
+    Promise.allSettled(checks).then(results => {
+        const verticalUrls = results
+            .filter(r => r.status === 'fulfilled' && r.value !== null)
+            .map(r => r.value);
 
-    setInterval(() => {
-        heroCanvas.classList.add('fade-out');
-        setTimeout(() => {
-            currentHeroIdx = (currentHeroIdx + 1) % heroImages.length;
-            drawSlide(heroImages[currentHeroIdx]);
-        }, 1500);
-    }, 6500);
+        // Si no hay ninguna vertical (caso improbable), usar todas para no dejar el hero vacío
+        heroImages = verticalUrls.length > 0 ? verticalUrls : candidateUrls;
+
+        // 3. Mezclar aleatoriamente y arrancar el carrusel
+        heroImages = heroImages.sort(() => Math.random() - 0.5);
+        startCarousel();
+    });
+
+    // Función interna: arranca el ciclo de diapositivas
+    function startCarousel() {
+        if (heroImages.length === 0) return;
+
+        const drawSlide = (src) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                ambient.style.backgroundImage = `url('${src}')`;
+                drawWatermarkedImage(heroCanvas, img, true);
+                heroCanvas.classList.remove('fade-out');
+            };
+            img.onerror = () => {
+                console.warn("Fallo al cargar imagen de carrusel:", src);
+                heroCanvas.classList.remove('fade-out');
+            };
+        };
+
+        drawSlide(heroImages[0]);
+
+        setInterval(() => {
+            heroCanvas.classList.add('fade-out');
+            setTimeout(() => {
+                currentHeroIdx = (currentHeroIdx + 1) % heroImages.length;
+                drawSlide(heroImages[currentHeroIdx]);
+            }, 1500);
+        }, 6500);
+    }
 }
 
 async function initGallery() {
@@ -317,6 +450,14 @@ async function initGallery() {
     const btnBuyWa = document.getElementById('btn-buy-wa');
     if (btnBuyEmail) btnBuyEmail.addEventListener('click', () => handleBuyClick('email'));
     if (btnBuyWa) btnBuyWa.addEventListener('click', () => handleBuyClick('wa'));
+
+    const btnShareFb = document.getElementById('btn-share-fb');
+    if (btnShareFb) btnShareFb.addEventListener('click', () => {
+        const foto = fotografias.find(f => f.id === currentPhotoId);
+        const url = window.location.href.split('#')[0] + '#' + currentPhotoId;
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent("Descubre esta obra exclusiva limitada a 15 copias: " + (foto.titulo || 'Miradas tras un Objetivo'))}`;
+        window.open(fbUrl, '_blank', 'width=600,height=400');
+    });
 
     const commentForm = document.getElementById('comment-form');
     if (commentForm) commentForm.addEventListener('submit', handleCommentSubmit);
@@ -413,7 +554,7 @@ function renderGallery(filter) {
                     <canvas id="${canvasId}"></canvas>
                 </div>
                 <div class="item-info">
-                    <h3>${foto.titulo}</h3>
+                    <h3>${(I18n.getLang() === 'en' && foto.titulo_en) ? foto.titulo_en : foto.titulo}</h3>
                     <p>${foto.localidad}</p>
                 </div>
             `;
@@ -544,9 +685,25 @@ function openLightbox(id) {
     const foto = fotografias.find(f => f.id === id);
     if (!foto) return;
 
-    document.getElementById('lb-title').innerText = foto.titulo;
+    document.getElementById('lb-title').innerText = (I18n.getLang() === 'en' && foto.titulo_en) ? foto.titulo_en : foto.titulo;
     document.getElementById('lb-location').innerText = `${foto.localidad} - ${foto.anio}`;
-    document.getElementById('lb-desc').innerText = foto.descripcion;
+    document.getElementById('lb-desc').innerText = (I18n.getLang() === 'en' && foto.descripcion_en) ? foto.descripcion_en : foto.descripcion;
+
+    // Mostrar información de edición limitada
+    const total = foto.copias_totales || 15;
+    const vendidas = foto.copias_vendidas || 0;
+    const disponibles = total - vendidas;
+    
+    const buyNote = document.querySelector('.buy-note');
+    if (buyNote) {
+        if (disponibles > 0) {
+            const text = I18n.t('lb_copies_left').replace('{n}', disponibles);
+            buyNote.innerHTML = `${I18n.t('buy_note')} <strong>Edición limitada a ${total} copias. ${text}.</strong>`;
+            buyNote.style.color = disponibles <= 3 ? '#ff6666' : 'var(--text-secondary)';
+        } else {
+            buyNote.innerHTML = `<strong style="color: #ff6666;">${I18n.t('lb_sold_out')}.</strong> Edición limitada de ${total} copias completa.`;
+        }
+    }
 
     const canvas = document.getElementById('lightbox-canvas');
     const img = new Image();
@@ -564,17 +721,16 @@ function closeLightbox() {
 }
 
 function handleBuyClick(method) {
-    if (!currentPhotoId) return;
     const foto = fotografias.find(f => f.id === currentPhotoId);
+    if (!foto) return;
 
-    const introText = `Hola Óscar, estoy interesado en adquirir los derechos o una copia impresa de alta calidad de tu fotografía "${foto.titulo}" (ID: ${foto.id}, Localidad: ${foto.localidad}). \n\nPor favor, me gustaría que me informaras sobre formatos y precios.\n\nGracias.`;
-
+    const message = `Hola Óscar, estoy interesado en adquirir una copia de la obra "${foto.titulo}". ¿Podrías darme más información?`;
+    
     if (method === 'email') {
-        const mailtoLink = `mailto:caroslogar@yahoo.com?subject=Consulta de compra: ${encodeURIComponent(foto.titulo)}&body=${encodeURIComponent(introText)}`;
-        window.location.href = mailtoLink;
+        window.location.href = `mailto:miradas.oscarlopez@gmail.com?subject=Interés en obra: ${foto.titulo}&body=${encodeURIComponent(message)}`;
     } else {
-        const waLink = `https://wa.me/34614443759?text=${encodeURIComponent(introText)}`;
-        window.open(waLink, '_blank');
+        const waUrl = `https://wa.me/34614443759?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
     }
 }
 
@@ -662,38 +818,57 @@ function DOMPurify(str) {
         e.preventDefault();
         const email = "caroslogar@gmail.com";
         const password = document.getElementById('admin-password').value;
+        const btnSubmit = loginForm.querySelector('button');
+
         loginError.style.color = "var(--text-dim)";
-        loginError.innerText = "Verificando identidad...";
+        loginError.innerText = "Conectando con el servidor...";
+        btnSubmit.disabled = true;
+
+        console.log("--- Iniciando Intento de Acceso ---");
+        console.log("Email:", email);
 
         try {
-            // Primer intento: Login
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             
             if (error) {
-                // Si el error es de credenciales inválidas y es la primera vez, intentamos registro
-                if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
-                    const { data: regData, error: regError } = await supabaseClient.auth.signUp({ email, password });
-                    if (regError) {
-                        loginError.style.color = "#ff6666";
-                        loginError.innerText = "Error: " + regError.message;
-                    } else {
-                        loginError.style.color = "var(--accent)";
-                        loginError.innerText = "¡Cuenta proyectada! Revisa caroslogar@gmail.com para confirmar y vuelve a entrar.";
-                    }
+                console.error("Error de Supabase:", error.message, error.status);
+                
+                if (error.message.includes('Email not confirmed')) {
+                    loginError.style.color = "#ffaa00";
+                    loginError.innerHTML = `Cuenta pendiente de confirmación.<br><button id="btn-resend-email" style="background:transparent; border:1px solid var(--accent-gold); color:var(--accent-gold); padding:5px 10px; border-radius:15px; font-size:0.7rem; margin-top:10px; cursor:pointer;">Reenviar correo de verificación</button>`;
+                    
+                    document.getElementById('btn-resend-email').onclick = async () => {
+                        const { error: resendError } = await supabaseClient.auth.resend({
+                            type: 'signup',
+                            email: email
+                        });
+                        if (resendError) {
+                            alert("Error al reenviar: " + resendError.message);
+                        } else {
+                            alert("Correo de confirmación enviado a " + email + ". Por favor, revisa tu bandeja de entrada o SPAM.");
+                        }
+                    };
+                } else if (error.message.includes('Invalid login credentials')) {
+                    loginError.style.color = "#ff6666";
+                    loginError.innerText = "Credenciales incorrectas. Verifica tu contraseña.";
                 } else {
                     loginError.style.color = "#ff6666";
-                    loginError.innerText = "Acceso denegado: " + error.message;
+                    loginError.innerText = "Fallo: " + error.message;
                 }
+                btnSubmit.disabled = false;
                 return;
             }
 
-            // Login con éxito
+            // Éxito: El usuario está logueado y confirmado
+            console.log("Acceso concedido para:", data.user.email);
             authScreen.classList.add('hidden');
             ctrlPanel.classList.remove('hidden');
             loginError.innerText = "";
         } catch (err) {
+            console.error("Fallo crítico en el cliente:", err);
             loginError.style.color = "#ff6666";
-            loginError.innerText = "Fallo de conexión con el estudio.";
+            loginError.innerText = "Fallo de conexión. Revisa tu internet.";
+            btnSubmit.disabled = false;
         }
     };
 
@@ -723,9 +898,13 @@ function DOMPurify(str) {
         btnPublish.onclick = async () => {
             const file = photoFile.files[0];
             const title = document.getElementById('photo-title').value;
+            const titleEn = document.getElementById('photo-title-en').value;
             const location = document.getElementById('photo-location').value;
             const category = document.getElementById('photo-category').value;
             const description = document.getElementById('photo-description').value;
+            const descriptionEn = document.getElementById('photo-description-en').value;
+            const totalCopies = parseInt(document.getElementById('photo-total-copies').value) || 15;
+            const soldCopies = parseInt(document.getElementById('photo-sold-copies').value) || 0;
 
             if(!file || !title) {
                 alert("Es esencial subir la foto y ponerle un título.");
@@ -753,10 +932,14 @@ function DOMPurify(str) {
                 const { data: dbData, error: dbError } = await supabaseClient.from('fotografias').insert([
                     { 
                         titulo: title, 
+                        titulo_en: titleEn,
                         localidad: location, 
                         tematica: category, 
                         descripcion: description, 
-                        url: publicUrl 
+                        descripcion_en: descriptionEn,
+                        url: publicUrl,
+                        copias_totales: totalCopies,
+                        copias_vendidas: soldCopies
                     }
                 ]).select();
 

@@ -21,7 +21,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
     font-family: var(--font-body);
-    line-height: 1.6;
+    line-height: 1.8; /* Aumentado para elegancia */
     /* Prevention of selection */
     user-select: none;
     -webkit-user-select: none;
@@ -333,7 +333,7 @@ canvas {
 .spa-view {
     display: block;
     opacity: 1;
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1); /* Más lento y fluido */
 }
 
 .spa-view.hidden {
@@ -685,6 +685,57 @@ footer {
     margin-bottom: 0.5rem;
 }
 
+/* Gemini Helper Block */
+.gemini-helper {
+    background: rgba(201, 168, 76, 0.05);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.gemini-helper h4 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gemini-helper p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.gemini-prompt-box {
+    background: rgba(0,0,0,0.3);
+    padding: 1rem;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #ccc;
+    position: relative;
+    cursor: pointer;
+}
+
+.gemini-prompt-box:hover {
+    background: rgba(0,0,0,0.5);
+}
+
+.gemini-prompt-box::after {
+    content: "Copiar Prompt";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.6rem;
+    background: var(--accent-gold);
+    color: black;
+    padding: 2px 5px;
+    border-radius: 3px;
+    opacity: 0.6;
+}
+
 /* Detectar modo admin vía URL */
 body:has(#spa-admin.active) {
     overflow: auto;
@@ -708,6 +759,33 @@ body:has(#spa-admin.active) {
 
 .gallery-header .header-nav a:hover {
     color: var(--accent-gold);
+}
+
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1.5rem;
+}
+
+.btn-lang {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 2px 5px;
+    transition: color 0.3s;
+    letter-spacing: 1px;
+}
+
+.btn-lang.active {
+    color: var(--accent-gold);
+}
+
+.btn-lang:hover {
+    color: white;
 }
 
 /* Presentación Corta en Landing */
@@ -848,59 +926,92 @@ body:has(#spa-admin.active) {
         gap: 1rem;
     }
 
+    /* ===== HERO EN MÓVIL: fotografía centrada como protagonista ===== */
     .hero {
-        flex-direction: column-reverse;
-        /* Pone la imagen ARRIBA de las letras */
-        height: auto;
-        min-height: 100vh;
+        flex-direction: column;
+        /* Fotografía primero (arriba), texto secundario después */
+        height: 100dvh;
+        min-height: 100dvh;
         justify-content: center;
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+        align-items: center;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
     }
 
+    /* La fotografía ocupa el centro visual de la pantalla */
     .hero-visual {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        height: 45vh;
-        max-height: 45vh;
+        height: 100%;
         padding: 0;
-        margin-bottom: 1.5rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
     }
 
     .hero-canvas {
-        max-height: 100%;
-    }
-
-    .hero-content {
         width: 100%;
-        padding: 0 1rem;
-        text-align: center;
+        height: 100%;
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: cover;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
     }
 
-    .hero-nav ul {
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
+    /* El contenido textual va superpuesto en la parte inferior */
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+        padding: 1.5rem 1.2rem 2rem;
+        text-align: center;
+        background: linear-gradient(to top, rgba(10, 10, 12, 0.95) 60%, rgba(10, 10, 12, 0) 100%);
     }
 
     .hero-content img {
-        width: 60px !important;
-        height: 60px !important;
-        margin-bottom: 1rem !important;
+        width: 45px !important;
+        height: 45px !important;
+        margin-bottom: 0.5rem !important;
     }
 
     .hero h2 {
-        font-size: 2rem;
-        line-height: 1.2;
-        margin-bottom: 0.5rem;
+        font-size: 1.8rem;
+        line-height: 1.15;
+        margin-bottom: 0.2rem;
         word-break: break-word;
     }
 
     .hero .author-title {
-        font-size: 1.15rem;
-        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
         white-space: normal;
+        position: relative;
+        z-index: 5;
     }
 
+    .hero-nav ul {
+        justify-content: center;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+        border-top: 1px solid rgba(255,255,255,0.12);
+        padding-top: 0.8rem;
+    }
+
+    .hero-nav a {
+        font-size: 0.78rem;
+        letter-spacing: 1.5px;
+    }
+
+    /* ===== PRESENTACIÓN ===== */
     .presentation-content h2 {
         font-size: 2rem;
     }
@@ -922,7 +1033,7 @@ body:has(#spa-admin.active) {
         padding: 3rem 5%;
     }
 
-    /* Lightbox Modal Ajustes */
+    /* ===== LIGHTBOX EN MÓVIL ===== */
     .lightbox-content {
         flex-direction: column;
     }
@@ -931,36 +1042,98 @@ body:has(#spa-admin.active) {
         height: 50vh;
     }
 
-    /* Cabe cera de Galería en Móvil: 2 filas */
+    /* ===== CABECERA DE GALERÍA EN MÓVIL ===== */
     .gallery-header {
         flex-direction: column;
-        /* apila logo y nav verticalmente */
         align-items: center;
-        gap: 0.6rem;
-        padding: 0.9rem 5%;
+        gap: 0.5rem;
+        padding: 0.8rem 5%;
     }
 
-    /* Fila superior: logo + nombre centrados */
     .gallery-header .header-logo {
         justify-content: center;
         width: 100%;
     }
 
-    /* Fila inferior: enlaces de navegación centrados y más juntos */
     .gallery-header .header-nav {
         width: 100%;
     }
 
     .gallery-header .header-nav ul {
         justify-content: center;
-        gap: 1.2rem;
+        gap: 1rem;
         flex-wrap: wrap;
     }
 
     .gallery-header .header-nav a {
-        font-size: 0.75rem;
-        /* letra más pequeña para que quepan */
+        font-size: 0.72rem;
         letter-spacing: 0.5px;
+    }
+
+    /* ===== GALERÍA EN MÓVIL: foto como protagonista central ===== */
+    /* Los filtros en scroll horizontal discreto en la parte superior */
+    .filters {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+        padding: 0.3rem 0.5rem 0.6rem;
+        justify-content: flex-start;
+        scrollbar-width: none;  /* Oculta scrollbar en Firefox */
+    }
+    .filters::-webkit-scrollbar {
+        display: none;  /* Oculta scrollbar en Chrome/Safari */
+    }
+    .filter-btn {
+        flex-shrink: 0;  /* Impide que los botones se encojan */
+        padding: 0.4rem 1rem;
+        font-size: 0.78rem;
+    }
+
+    /* El grid de fotos en móvil: una foto por fila, foto grande y centrada */
+    .grid-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .grid-item {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    /* El contenedor del canvas ocupa toda la pantalla */
+    .item-canvas-container {
+        width: 100%;
+        height: 70vw;  /* Proporción cuadrada/rectangular agradable en móvil */
+        max-height: 65vh;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .item-canvas-container canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Panorámicas en móvil: también encuadradas respetando ratio */
+    .item-canvas-container--panorama {
+        width: 100%;
+        height: auto;
+        min-height: 45vw;
+    }
+
+    .grid-item--panorama {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
     }
 
     /* Compensar la cabecera más alta en móvil */
@@ -1092,16 +1265,15 @@ body:has(#spa-admin.active) {
         opacity: 0.7;
     }
 
-    /* Le quitamos un 10% de tiempo (antes 40%) empieza a disolverse pronto */
+    /* Ajuste para que no se salga por arriba: escala más conservadora y menos traslación vertical */
     45% {
         opacity: 0;
-        transform: scale(0.86) translate(-3%, -2%);
+        transform: scale(0.8) translate(-2%, -1%);
     }
 
-    /* Desaparece por completo al 45% */
     100% {
         opacity: 0;
-        transform: scale(0.86);
+        transform: scale(0.8);
     }
 }
 
@@ -1114,7 +1286,7 @@ body:has(#spa-admin.active) {
 @keyframes photo2Anim {
     0% {
         opacity: 0;
-        transform: scale(0.825) translate(3%, 2%);
+        transform: scale(0.8) translate(2%, 1%);
     }
 
     35% {
@@ -1301,46 +1473,83 @@ body:has(#spa-admin.active) {
     }
 
     .start-intro-btn {
-        font-size: 1rem;
-        padding: 1rem 1.5rem;
-        width: 80%;
+        font-size: 0.95rem;
+        padding: 1rem 1.2rem;
+        width: 82%;
+        max-width: 320px;
         text-align: center;
         letter-spacing: 1.5px;
+        white-space: normal;  /* Permite que el texto haga salto de línea si es necesario */
+        word-break: break-word;
         transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
     }
+
+    /* Ajuste específico para que las fotos de la intro no desborden arriba en móviles */
+    .intro-bg-container canvas {
+        object-fit: contain;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
+    }
+    
+    /* Modificar las animaciones internas para que respeten el centrado forzado sin !important */
+    .intro-photo-1 { animation: photo1AnimMobile 20s ease-in-out forwards !important; }
+    .intro-photo-2 { animation: photo2AnimMobile 20s ease-in-out forwards !important; }
+}
+
+@keyframes photo1AnimMobile {
+    0%   { opacity: 0;   transform: scale(0.65) translate(0, 0); }
+    10%  { opacity: 0.7; }
+    40%  { opacity: 0.7; }
+    60%  { opacity: 0;   transform: scale(0.72) translate(-2%, -1%); }
+    100% { opacity: 0;   transform: scale(0.72) translate(-2%, -1%); }
+}
+
+@keyframes photo2AnimMobile {
+    0%   { opacity: 0;   transform: scale(0.72) translate(2%, 1%); }
+    45%  { opacity: 0; }
+    60%  { opacity: 0.7; }
+    100% { opacity: 0.7; transform: scale(0.65) translate(0, 0); }
 }
 
 /* === BREAKPOINT EXTRA: pantallas muy pequeñas (≤ 480px) === */
 @media (max-width: 480px) {
-    .hero {
-        padding-top: 1.5rem;
-    }
-
-    .hero-visual {
-        height: 38vh;
-        max-height: 38vh;
+    /* El hero ya es full-screen con overlay en la base, sólo ajustamos tamaños de texto */
+    .hero-content {
+        padding: 1.2rem 1rem 1.8rem;
     }
 
     .hero-content img {
-        width: 50px !important;
-        height: 50px !important;
+        width: 38px !important;
+        height: 38px !important;
+        margin-bottom: 0.4rem !important;
     }
 
     .hero h2 {
-        font-size: 1.7rem;
+        font-size: 1.5rem;
     }
 
     .hero .author-title {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
     }
 
     .hero-nav a {
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         letter-spacing: 1px;
     }
 
     .presentation-section {
         padding: 2.5rem 5%;
+    }
+
+    /* Galería en móvil pequeño: canvas ligeramente más alto */
+    .item-canvas-container {
+        height: 80vw;
     }
 }
 
