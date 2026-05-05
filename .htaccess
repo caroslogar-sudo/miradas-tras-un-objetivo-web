@@ -1,0 +1,17 @@
+# REGLAS DE EMERGENCIA PARA FACEBOOK
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Si es el robot de Facebook, no aplicar bloqueos de seguridad
+    RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|Pinterest) [NC]
+    RewriteRule .? - [S=1]
+</IfModule>
+
+# Intentar desactivar protecciones básicas que bloquean bots
+<IfModule mod_security.c>
+    SecFilterEngine Off
+    SecFilterScanPOST Off
+</IfModule>
+
+# Permitir listado de directorios si fuera necesario para el crawler
+Options +FollowSymLinks -Indexes

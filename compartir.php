@@ -4,7 +4,7 @@
  * Asegura que Facebook encuentre la foto en la carpeta local /fotos/
  */
 
-$id = isset($_GET['id']) ? $_GET['id'] : '';
+$id = isset($_GET['f']) ? $_GET['f'] : '';
 if (!$id) {
     header("Location: index.html");
     exit;
@@ -63,7 +63,7 @@ if ($httpCode == 200) {
     <meta property="og:image" content="<?php echo htmlspecialchars($imageUrl); ?>">
     <meta property="og:image:secure_url" content="<?php echo htmlspecialchars($imageUrl); ?>">
     <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:url" content="https://oscarlopezfotografias.com/compartir.php?id=<?php echo $id; ?>">
+    <meta property="og:url" content="https://oscarlopezfotografias.com/compartir.php?f=<?php echo $id; ?>">
     <meta property="og:type" content="article">
 
     <!-- Redirección para el usuario -->

@@ -468,7 +468,7 @@ async function initGallery() {
         const foto = fotografias.find(f => f.id === currentPhotoId);
         // Usamos compartir.php para que Facebook pueda rastrear los metadatos dinámicos
         const base = window.location.origin + window.location.pathname.replace('index.html', '');
-        const shareUrl = `${base}compartir.php?id=${currentPhotoId}`;
+        const shareUrl = `${base}compartir.php?f=${currentPhotoId}`;
         
         const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
         window.open(fbUrl, '_blank', 'width=600,height=400');
