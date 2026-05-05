@@ -439,6 +439,14 @@ async function initGallery() {
 
     renderGallery('all');
 
+    // Manejar enlace directo a foto si existe en el hash al cargar
+    const hash = window.location.hash.replace('#', '');
+    if (hash && !['home', 'gallery', 'contacto', 'admin'].includes(hash)) {
+        // Esperamos un instante a que el array 'fotografias' esté bien asentado 
+        // y abrimos el lightbox de la obra solicitada.
+        setTimeout(() => openLightbox(hash), 100);
+    }
+
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -737,11 +745,19 @@ function openLightbox(id) {
 
     renderComments(id);
     document.getElementById('lightbox').classList.add('active');
+
+    // Actualizar hash para que el enlace sea compartible directamente
+    if (window.location.hash !== '#' + id) {
+        history.replaceState(null, null, '#' + id);
+    }
 }
 
 function closeLightbox() {
     document.getElementById('lightbox').classList.remove('active');
     currentPhotoId = null;
+    
+    // Al cerrar, volvemos a la sección galería en la URL
+    history.replaceState(null, null, '#gallery');
 }
 
 function handleBuyClick(method) {

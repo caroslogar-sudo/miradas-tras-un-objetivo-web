@@ -424,11 +424,20 @@
             // --- DETECCIÓN DE HASH Y RUTA ---
             const handleHashRoute = () => {
                 const hash = window.location.hash.replace('#', '');
+                if (!hash || hash === 'home') return;
+
                 if (hash === 'gallery' || hash === 'contacto') {
                     if (introOverlay) introOverlay.style.display = 'none';
                     AppRouter.goTo('gallery', hash === 'contacto' ? 'contacto' : '');
-                } else if (hash === 'home' || hash === '') {
-                    // No hacemos nada, dejamos que la intro siga su curso si es la primera vez
+                } else if (hash !== 'admin') {
+                    // Si el hash no es una ruta conocida (como 'gallery' o 'contacto'), 
+                    // asumimos que es un ID de foto para el deep linking.
+                    if (introOverlay) introOverlay.style.display = 'none';
+                    // Vamos a la galería, pero no scrolleamos arriba si ya estamos en ella
+                    const galleryView = document.getElementById('spa-gallery');
+                    if (galleryView && galleryView.classList.contains('hidden')) {
+                        AppRouter.goTo('gallery');
+                    }
                 }
             };
 
