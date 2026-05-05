@@ -466,11 +466,14 @@ async function initGallery() {
     const btnShareFb = document.getElementById('btn-share-fb');
     if (btnShareFb) btnShareFb.addEventListener('click', () => {
         const foto = fotografias.find(f => f.id === currentPhotoId);
-        // Usamos compartir.php para que Facebook pueda rastrear los metadatos dinámicos
+        const tituloObra = (I18n.getLang() === 'en' && foto.titulo_en) ? foto.titulo_en : foto.titulo;
+        
+        // Usamos compartir.php para el enlace y añadimos una 'quote' con el título
         const base = window.location.origin + window.location.pathname.replace('index.html', '');
         const shareUrl = `${base}compartir.php?f=${currentPhotoId}`;
+        const quote = `Descubre esta obra exclusiva: "${tituloObra}" | Miradas tras un Objetivo`;
         
-        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
         window.open(fbUrl, '_blank', 'width=600,height=400');
     });
 
