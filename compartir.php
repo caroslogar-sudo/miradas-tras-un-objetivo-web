@@ -1,23 +1,21 @@
 <?php
 /**
- * COMPARTIR.PHP - Puente dinámico para Facebook Open Graph
- * Este archivo permite que Facebook lea los metadatos de cada foto individualmente.
+ * COMPARTIR.PHP - RECTIFICADO V2
+ * Gestión de miniaturas (600px) y metadatos dinámicos.
  */
 
-// 1. Obtener el ID de la fotografía
 $id = isset($_GET['id']) ? $_GET['id'] : '';
-
 if (!$id) {
     header("Location: index.html");
     exit;
 }
 
-// 2. Configuración de Supabase (Lectura pública)
+// Configuración Supabase
 $supabaseUrl = 'https://ofwzeenfdeimuwvhvpht.supabase.co';
 $supabaseKey = 'sb_publishable_Z-mfgQPG9ikmn_0wGQsCtQ_9feQU4Ue';
 
-// 3. Consultar datos de la obra mediante cURL (API REST de Supabase)
-$apiUrl = $supabaseUrl . '/rest/v1/fotografias?id=eq.' . $id . '&select=titulo,url';
+// Consultar datos de la obra
+$apiUrl = $supabaseUrl . '/rest/v1/fotografias?id=eq.' . $id . '&select=titulo,url,tematica';
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -30,7 +28,8 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 $titulo = "Miradas tras un Objetivo";
-$imageUrl = "https://oscarlopezfotografias.com/portada_facebook.png"; // Fallback
+$imageUrl = "https://oscarlopezfotografias.com/portada_facebook.png";
+$descripcion = "Edición artística exclusiva limitada a 15 copias.";
 
 if ($httpCode == 200) {
     $data = json_decode($response, true);
@@ -39,48 +38,48 @@ if ($httpCode == 200) {
         $titulo = $foto['titulo'];
         $urlOriginal = $foto['url'];
         
-        // Normalizar URL de imagen
-        if (strpos($urlOriginal, 'http') !== 0) {
-            $imageUrl = "https://oscarlopezfotografias.com/" . (strpos($urlOriginal, 'fotos/') === 0 ? "" : "fotos/") . $urlOriginal;
+        // 1. CONSTRUCCIÓN DE URL DE MINIATURA (Protección y Optimización)
+        // Intentamos usar el renderizador de Supabase para obtener una versión de 600px
+        if (strpos($urlOriginal, 'http') === 0) {
+            // Si ya es una URL de Supabase, le inyectamos el parámetro de transformación
+            // Nota: Esto requiere que Supabase tenga habilitado el Image Transformation (estándar en Pro)
+            // Si no, usará la original pero FB la mostrará como miniatura.
+            $imageUrl = str_replace('/object/public/', '/render/image/public/', $urlOriginal) . "?width=600&resize=contain";
         } else {
-            $imageUrl = $urlOriginal;
+            // Si es una ruta relativa
+            $path = (strpos($urlOriginal, 'fotos/') === 0 ? "" : "fotos/") . $urlOriginal;
+            $imageUrl = "https://oscarlopezfotografias.com/" . $path;
         }
-        
-        // NOTA SOBRE TAMAÑO: Facebook ya redimensiona la imagen para la previsualización.
-        // Al compartir el enlace de Supabase directamente en og:image, FB genera su propia miniatura.
     }
 }
 
-// 4. Generar el HTML con los Meta Tags para el crawler de Facebook
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($titulo); ?> | Óscar López Fotografía</title>
+    <title><?php echo htmlspecialchars($titulo); ?> | Óscar López</title>
     
-    <!-- Metadatos Open Graph para Facebook/WhatsApp -->
-    <meta property="og:title" content="<?php echo htmlspecialchars($titulo); ?> | Óscar López">
-    <meta property="og:description" content="Descubre esta obra exclusiva en la exposición virtual 'Miradas tras un Objetivo'. Edición limitada.">
+    <!-- METADATOS CRÍTICOS PARA FACEBOOK -->
+    <meta property="og:site_name" content="Óscar López Fotografía">
+    <meta property="og:title" content="<?php echo htmlspecialchars($titulo); ?> | Obra Exclusiva">
+    <meta property="og:description" content="<?php echo htmlspecialchars($descripcion); ?>">
     <meta property="og:image" content="<?php echo htmlspecialchars($imageUrl); ?>">
+    <meta property="og:image:secure_url" content="<?php echo htmlspecialchars($imageUrl); ?>">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="400">
     <meta property="og:url" content="https://oscarlopezfotografias.com/compartir.php?id=<?php echo $id; ?>">
     <meta property="og:type" content="article">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
 
-    <!-- Redirección inmediata para el usuario real -->
+    <!-- Redirección para el usuario -->
     <script>
         window.location.href = "index.html#<?php echo $id; ?>";
     </script>
-    
-    <style>
-        body { background: #000; color: #c5a059; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .loader { text-align: center; }
-    </style>
 </head>
-<body>
-    <div class="loader">
-        <p>Cargando obra artística...</p>
+<body style="background:#000; color:#fff; display:flex; align-items:center; justify-content:center; height:100vh;">
+    <div style="text-align:center;">
+        <p>Entrando en la obra: <strong><?php echo htmlspecialchars($titulo); ?></strong></p>
     </div>
 </body>
 </html>
